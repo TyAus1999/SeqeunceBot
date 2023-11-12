@@ -465,6 +465,5 @@ int Board::weighPoint(int team, int x, int y) {
 	for (int dir = 0; dir < 8; dir++) {
 		weight += lenOfLineDir(x, y, team, dir);
 	}
-
 	return weight;
 }

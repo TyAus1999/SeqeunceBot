@@ -38,8 +38,8 @@ void Game::initGame(int players, int teams) {
 	}
 	aiPlayers[0] = true;
 	printf("What cards does the AI have\n");
-	//Card* cards = getRealCards(8);
-	Card* cards = getSetCards();
+	Card* cards = getRealCards(8);
+	//Card* cards = getSetCards();
 	this->players[0].setCardsInHand(8);
 	this->players[0].setHand(cards);
 	delete[] cards;
