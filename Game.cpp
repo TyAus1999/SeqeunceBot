@@ -71,6 +71,9 @@ bool Game::tick() {
 			printf("Location could not be played\n");
 			return true;
 		}
+		std::string faceName = getFaceName(p->hand[cardIndex].face);
+		std::string suitName = getSuitName(p->hand[cardIndex].suit);
+		printf("Ai Played %s, %s\n", faceName.c_str(), suitName.c_str());
 		b.drawBoard();
 		printf("Which card did Player %i pick up\n", currentPlayerTurn);
 		Card* pickedUp = getRealCards(1);
