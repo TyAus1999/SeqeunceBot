@@ -378,7 +378,7 @@ bool Board::playPeice(int x, int y, int team) {
 	return true;
 }
 
-int Board::lenOfLineDir(int x, int y, int team, int boardDirection) {
+int Board::lenOfLineDir(int x, int y, int team, int boardDirection, int maxInDir) {
 	int xDir = 0;
 	int yDir = 0;
 	switch (boardDirection) {
@@ -416,18 +416,21 @@ int Board::lenOfLineDir(int x, int y, int team, int boardDirection) {
 		break;
 	}
 	//Cycle through everything
-	int testX = x+xDir;
-	int testY = y+yDir;
+	int testX = x + xDir;
+	int testY = y + yDir;
 	int inLine = 0;
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < maxInDir; i++) {
 		Place* testPlace = getPlace(testX, testY);
 		if (!testPlace)
 			return inLine;
-		if (testPlace->isFree || testPlace->teamOwned == team) {
-			inLine++;
-		}
-		else
-			break;
+		if (testPlace->teamOwned > -1 && testPlace->teamOwned != team)
+			return inLine;
+		inLine++;
+		//if (testPlace->isFree || testPlace->teamOwned == team) {
+		//	inLine++;
+		//}
+		//else
+		//	break;
 		testX += xDir;
 		testY += yDir;
 	}
@@ -446,7 +449,7 @@ int Board::getAmountLines(int* team) {
 				continue;
 			int total = 0;
 			for (int dir = 0; dir < 8; dir++)
-				total += lenOfLineDir(x, y, p->teamOwned, dir);
+				total += lenOfLineDir(x, y, p->teamOwned, dir, 5);
 			if (total > highest) {
 				highest = total;
 				teamWithHighest = p->teamOwned;
@@ -463,7 +466,12 @@ int Board::weighPoint(int team, int x, int y) {
 		return -1;
 	int weight = 0;
 	for (int dir = 0; dir < 8; dir++) {
-		weight += lenOfLineDir(x, y, team, dir);
+		weight += lenOfLineDir(x, y, team, dir, 5);
 	}
 	return weight;
+}
+
+bool Board::checkWin(int* winningTeam, int maxLines) {
+	int lines = 0;
+	return false;
 }

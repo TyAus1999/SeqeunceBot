@@ -26,7 +26,8 @@ void Player::setCardsInHand(int amount) {
 bool Player::isInHand(Card* c, int* cardIndex) {
 	for (int i = 0; i < cardsInHand; i++) {
 		if (hand[i].isEqual(c)) {
-			*cardIndex = i;
+			if (cardIndex)
+				*cardIndex = i;
 			return true;
 		}
 	}

@@ -54,7 +54,7 @@ void Game::setPlayerAI(int player) {
 bool Game::tick() {
 	//b.drawBoard();
 	int winning;
-	if (checkWin(&winning)) {
+	if (b.checkWin(&winning, 2)) {
 		printf("Winning Team: %i\n", winning);
 		return false;
 	}
@@ -149,6 +149,32 @@ Card* Game::getSetCards() {
 	return out;
 }
 
+Card* Game::getValidRandomCards(int amount) {
+	Card* out = new Card[amount];
+	for (int i = 0; i < amount; i++) {
+		Card* cCard = &out[i];
+		bool isGood = true;
+		while (isGood) {
+			int inHand = 0;
+			cCard->setRandom();
+			for (int p = 0; p < amountPlayers; p++) {
+				Player* cPlayer = &players[p];
+				if (cPlayer->isInHand(cCard)) {
+					if (inHand > 1) {
+						isGood = false;
+						break;
+					}
+					inHand++;
+				}
+			}
+			for (int p = i - 1; p > -1; p++) {
+
+			}
+		}
+	}
+	return out;
+}
+
 bool Game::getAiBestLocation(int player, int* x, int* y, int* cardIndex) {
 	Player* p = &players[player];
 	struct xy {
@@ -187,24 +213,4 @@ bool Game::getAiBestLocation(int player, int* x, int* y, int* cardIndex) {
 	*y = endMinus->second.y;
 	*cardIndex = endMinus->second.cardIndex;
 	return true;
-}
-
-bool Game::checkWin(int* winningTeam) {
-	int maxLen = -1;
-	int maxLenTeam = -1;
-	for (int x = 0; x < 10; x++) {
-		for (int y = 0; y < 10; y++) {
-			for (int team = 0; team < amountTeams; team++) {
-				for (int dir = 0; dir < 8; dir++) {
-					/*int len = b.lenOfLineDir(x, y, team, dir);
-					if (len > maxLen) {
-						maxLen = len;
-						maxLenTeam = team;
-					}*/
-				}
-			}
-		}
-	}
-	printf("Max Len: %i, Max Len Team: %i\n", maxLen, maxLenTeam);
-	return false;
 }

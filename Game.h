@@ -22,6 +22,7 @@ public:
 	Card* getRealCards(int amount);
 	//Must delete[] return pointer
 	Card* getSetCards();
+	//Must delete[] return pointer, returns set that is valid and not in the other players hands
+	Card* getValidRandomCards(int amount);
 	bool getAiBestLocation(int player, int* x, int* y, int* cardIndex);
-	bool checkWin(int* winningTeam);
 };

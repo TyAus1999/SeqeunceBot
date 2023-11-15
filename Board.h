@@ -37,7 +37,8 @@ public:
 	Place* getPlace(int x, int y);
 	bool playPeice(int x, int y, int team);
 	//Returns the amount of peices on the team that are in that direction
-	int lenOfLineDir(int x, int y, int team, int boardDirection);
+	int lenOfLineDir(int x, int y, int team, int boardDirection, int maxInDir);
 	int getAmountLines(int* team);//Returns the team with the most amount of lines
 	int weighPoint(int team, int x, int y);
+	bool checkWin(int* winningTeam, int maxLines);
 };

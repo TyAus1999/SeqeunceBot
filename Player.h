@@ -10,5 +10,5 @@ public:
 	~Player();
 	void setHand(Card* cards);
 	void setCardsInHand(int amount);
-	bool isInHand(Card* c, int* cardIndex);
+	bool isInHand(Card* c, int* cardIndex = 0);
 };

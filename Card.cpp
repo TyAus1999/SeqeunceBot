@@ -11,16 +11,21 @@ void Card::print() {
 	std::cout << "Suit: " << sName << ", Face: " << fName << "\n";
 }
 
-void Card::setSuit(int suit) {
-	this->suit = suit;
-}
-
-void Card::setFace(int face) {
-	this->face = face;
-}
-
 bool Card::isEqual(Card* c) {
 	return c->face == face && c->suit == suit;
+}
+
+void Card::setRandom() {
+	suit = rand() % 4;
+	suit++;
+	face = rand() % 13;
+	face++;
+}
+
+bool Card::isValid() {
+	if (suit == NoSuit || face == NoFace)
+		return false;
+	return true;
 }
 
 bool Card::operator==(const Card& other) {

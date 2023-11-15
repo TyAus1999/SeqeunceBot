@@ -69,8 +69,8 @@ public:
 	Prints the values of the Card
 	*/
 	void print();
-	void setSuit(int suit);
-	void setFace(int face);
 	bool isEqual(Card* c);
+	void setRandom();
+	bool isValid();
 	inline bool operator==(const Card& left);
 };
