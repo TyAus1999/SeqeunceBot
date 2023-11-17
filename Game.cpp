@@ -167,7 +167,7 @@ Card* Game::getValidRandomCards(int amount) {
 					inHand++;
 				}
 			}
-			for (int p = i - 1; p > -1; p++) {
+			for (int p = i - 1; p > -1; p--) {
 
 			}
 		}
