@@ -39,6 +39,8 @@ public:
 	//Returns the amount of peices on the team that are in that direction
 	int lenOfLineDir(int x, int y, int team, int boardDirection, int maxInDir);
 	int getAmountLines(int* team);//Returns the team with the most amount of lines
+	//For use with AI
 	int weighPoint(int team, int x, int y);
+	int amountPlayed(Card* card);
 	bool checkWin(int* winningTeam, int maxLines);
 };

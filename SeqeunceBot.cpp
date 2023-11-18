@@ -7,6 +7,7 @@ int main() {
 	bool isGood;
 	do {
 		isGood = g.tick();
+		system("pause");
 	} while (isGood);
 	return 0;
 }

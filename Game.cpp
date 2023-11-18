@@ -37,12 +37,24 @@ void Game::initGame(int players, int teams) {
 			setTeam++;
 	}
 	aiPlayers[0] = true;
-	printf("What cards does the AI have\n");
-	Card* cards = getRealCards(8);
+	aiPlayers[1] = true;
+	//printf("What cards does the AI have\n");
+	//Card* cards = getRealCards(8);
 	//Card* cards = getSetCards();
+	Card* cards = getValidRandomCards(8);
 	this->players[0].setCardsInHand(8);
 	this->players[0].setHand(cards);
 	delete[] cards;
+	printf("Player 0 Hand\n");
+	this->players[0].printHand();
+
+	//For the other ai player
+	cards = getValidRandomCards(8);
+	this->players[1].setCardsInHand(8);
+	this->players[1].setHand(cards);
+	delete[] cards;
+	printf("Player 1 Hand\n");
+	this->players[1].printHand();
 }
 
 void Game::setPlayerAI(int player) {
@@ -62,23 +74,30 @@ bool Game::tick() {
 	printf("Player: %i\n", currentPlayerTurn);
 	printf("\tTeam: %i\n", p->team);
 	if (aiPlayers[currentPlayerTurn]) {
-		printf("\tIs AI\n");
+		printf("\tIs AI\nHand:\n");
 		//AI function
+		p->printHand();
 		int x, y, cardIndex;
-		getAiBestLocation(currentPlayerTurn, &x, &y, &cardIndex);
-		printf("\tX: %i, Y: %i\n", x, y);
+		if (!getAiBestLocation(currentPlayerTurn, &x, &y, &cardIndex)) {
+			printf("AI wants to play an invalid location!, X: %i, Y: %i\n", x, y);
+			return true;
+		}
 		if (!b.playPeice(x, y, p->team)) {
-			printf("Location could not be played\n");
+			printf("Location could not be played on the board\n");
 			return true;
 		}
 		std::string faceName = getFaceName(p->hand[cardIndex].face);
 		std::string suitName = getSuitName(p->hand[cardIndex].suit);
-		printf("Ai Played %s, %s\n", faceName.c_str(), suitName.c_str());
+		printf("Ai Played %s, %s, at X: %i, Y: %i\n", faceName.c_str(), suitName.c_str(), x, y);
 		b.drawBoard();
-		printf("Which card did Player %i pick up\n", currentPlayerTurn);
-		Card* pickedUp = getRealCards(1);
-		p->hand[cardIndex] = pickedUp[0];
-		delete[] pickedUp;
+		Card pickedUp = getValidRandomPickup();
+		printf("AI Picked up\n");
+		pickedUp.print();
+		p->hand[cardIndex] = pickedUp;
+		//printf("Which card did Player %i pick up\n", currentPlayerTurn);
+		//Card* pickedUp = getRealCards(1);
+		//p->hand[cardIndex] = pickedUp[0];
+		//delete[] pickedUp;
 	}
 	else {
 		printf("\tIs Human\nInput:\n");
@@ -153,24 +172,53 @@ Card* Game::getValidRandomCards(int amount) {
 	Card* out = new Card[amount];
 	for (int i = 0; i < amount; i++) {
 		Card* cCard = &out[i];
-		bool isGood = true;
-		while (isGood) {
+		bool isGood = false;
+		while (!isGood) {
 			int inHand = 0;
 			cCard->setRandom();
 			for (int p = 0; p < amountPlayers; p++) {
 				Player* cPlayer = &players[p];
 				if (cPlayer->isInHand(cCard)) {
-					if (inHand > 1) {
-						isGood = false;
+					if (inHand > 1)
 						break;
-					}
 					inHand++;
 				}
 			}
+			//For checking if already in the hand to return
 			for (int p = i - 1; p > -1; p--) {
+				Card* testCard = &out[p];
+				if (testCard->isEqual(cCard)) {
+					if (inHand > 1)
+						break;
+					inHand++;
+				}
+			}
+			if (inHand < 2)
+				isGood = true;
+		}
+	}
+	return out;
+}
 
+Card Game::getValidRandomPickup() {
+	Card out;
+	bool isGood = false;
+	while (!isGood) {
+		int amount = 0;
+		out.setRandom();
+		//Check the players
+		for (int i = 0; i < amountPlayers; i++) {
+			Player* cPlayer = &players[i];
+			if (cPlayer->isInHand(&out)) {
+				if (amount > 1)
+					break;
+				amount++;
 			}
 		}
+		//Check the board for the card
+		amount += b.amountPlayed(&out);
+		if (amount < 2)
+			isGood = true;
 	}
 	return out;
 }

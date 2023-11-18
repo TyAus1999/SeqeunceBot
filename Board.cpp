@@ -471,6 +471,22 @@ int Board::weighPoint(int team, int x, int y) {
 	return weight;
 }
 
+int Board::amountPlayed(Card* card) {
+	if (card->face == 0 || card->suit == 0)
+		return 0;
+	int amountRet = 0;
+	for (int i = 0; i < 100; i++) {
+		Place* testPlace = &places[i];
+		if (testPlace->isFree || testPlace->teamOwned == -1)
+			continue;
+		Card* testCard = &testPlace->card;
+		if (!testCard->isEqual(card))
+			continue;
+		amountRet++;
+	}
+	return amountRet;
+}
+
 bool Board::checkWin(int* winningTeam, int maxLines) {
 	int lines = 0;
 	return false;

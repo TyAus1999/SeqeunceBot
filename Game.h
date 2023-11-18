@@ -24,5 +24,7 @@ public:
 	Card* getSetCards();
 	//Must delete[] return pointer, returns set that is valid and not in the other players hands
 	Card* getValidRandomCards(int amount);
+	//Used for getting a random valid card that has not been played yet
+	Card getValidRandomPickup();
 	bool getAiBestLocation(int player, int* x, int* y, int* cardIndex);
 };

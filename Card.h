@@ -11,6 +11,8 @@ enum CardSuit {
 
 static std::string getSuitName(int suit) {
 	std::string out = "Invalid Suit";
+	if (suit<Diamonds || suit>Spades)
+		return out;
 	switch (suit) {
 	case Diamonds:
 		out = "Diamonds";
@@ -38,6 +40,8 @@ enum CardFace {
 
 static std::string getFaceName(int face) {
 	std::string out = "Invalid Face";
+	if (face > King || face < Ace)
+		return out;
 	switch (face) {
 	case 0:
 		break;
