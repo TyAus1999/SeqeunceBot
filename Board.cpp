@@ -487,7 +487,20 @@ int Board::amountPlayed(Card* card) {
 	return amountRet;
 }
 
-bool Board::checkWin(int* winningTeam, int maxLines) {
+bool Board::checkWin(int* winningTeam, int maxLines, int maxTeams) {
 	int lines = 0;
+	for (int x = 0; x < 10; x++) {
+		for (int y = 0; y < 10; y++) {
+			for (int team = 0; team < maxTeams; team++) {
+				for (int dir = 0; dir < 8; dir++) {
+					int lenInDir = lenOfLineDir(x, y, team, dir, 5);
+					if (lenInDir == 5)
+						lines++;
+				}
+			}
+		}
+	}
+	if (lines > 0)
+		printf("Amount Lines: %i\n", lines);
 	return false;
 }

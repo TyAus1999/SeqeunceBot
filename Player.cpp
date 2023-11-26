@@ -34,6 +34,14 @@ bool Player::isInHand(Card* c, int* cardIndex) {
 	return false;
 }
 
+bool Player::has2EyedJack(int* cardIndex) {
+	return false;
+}
+
+bool Player::has1EyedJack(int* cardIndex) {
+	return false;
+}
+
 void Player::printHand() {
 	if (!hand) {
 		printf("No cards in hand for player!\n");

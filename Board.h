@@ -42,5 +42,5 @@ public:
 	//For use with AI
 	int weighPoint(int team, int x, int y);
 	int amountPlayed(Card* card);
-	bool checkWin(int* winningTeam, int maxLines);
+	bool checkWin(int* winningTeam, int maxLines, int maxTeams);
 };

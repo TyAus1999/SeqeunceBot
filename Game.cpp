@@ -66,7 +66,7 @@ void Game::setPlayerAI(int player) {
 bool Game::tick() {
 	//b.drawBoard();
 	int winning;
-	if (b.checkWin(&winning, 2)) {
+	if (b.checkWin(&winning, 2, amountTeams)) {
 		printf("Winning Team: %i\n", winning);
 		return false;
 	}
@@ -231,9 +231,40 @@ bool Game::getAiBestLocation(int player, int* x, int* y, int* cardIndex) {
 		int cardIndex;
 	};
 	std::vector<xy> validLocations;
+	//Checking for jacks
+	int jack2EyeCardIndex = -1;
+	if (p->has2EyedJack(&jack2EyeCardIndex)) {
+		for (int tx = 0; tx < 10; tx++) {
+			for (int ty = 0; ty < 10; ty++) {
+				Place* place = b.getPlace(tx, ty);
+				if (place->isFree || place->teamOwned != -1)
+					continue;
+				xy toAdd;
+				toAdd.x = tx;
+				toAdd.y = ty;
+				toAdd.cardIndex = jack2EyeCardIndex;
+				validLocations.push_back(toAdd);
+			}
+		}
+	}
+	//checking for single eye jacks
+	int jack1EyeCardIndex = -1;
+	if (p->has1EyedJack(&jack1EyeCardIndex)) {
+		for (int tx = 0; tx < 10; tx++) {
+			for (int ty = 0; ty < 10; ty++) {
+				Place* place = b.getPlace(tx, ty);
+				if (place->isFree || place->teamOwned == -1 || place->teamOwned == p->team)
+					continue;
+
+			}
+		}
+	}
+	//Checking for all of the cards that are in hand
 	for (int tY = 0; tY < 10; tY++) {
 		for (int tX = 0; tX < 10; tX++) {
 			Place* tempPlace = b.getPlace(tX, tY);
+			if (tempPlace->teamOwned != -1)
+				continue;
 			int cardIndex;
 			if (p->isInHand(&tempPlace->card, &cardIndex)) {
 				xy toAdd;
