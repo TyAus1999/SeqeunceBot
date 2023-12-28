@@ -423,8 +423,11 @@ int Board::lenOfLineDir(int x, int y, int team, int boardDirection, int maxInDir
 		Place* testPlace = getPlace(testX, testY);
 		if (!testPlace)
 			return inLine;
-		if (testPlace->teamOwned > -1 && testPlace->teamOwned != team)
-			return inLine;
+		/*else if (testPlace->teamOwned != team)
+			return inLine;*/
+		/*else if (testPlace->teamOwned > -1 || testPlace->teamOwned != team)
+			return inLine;*/
+		
 		inLine++;
 		//if (testPlace->isFree || testPlace->teamOwned == team) {
 		//	inLine++;
@@ -488,7 +491,14 @@ int Board::amountPlayed(Card* card) {
 }
 
 bool Board::checkWin(int* winningTeam, int maxLines, int maxTeams) {
-	int lines = 0;
+	for (int x = 0; x < 10; x++) {
+		for (int y = 0; y < 10; y++) {
+			int lenDir = lenOfLineDir(x, y, 0, Right, 5);
+			printf("In Dir: %i\n", lenDir);
+		}
+	}
+	return false;
+	/*int lines = 0;
 	for (int x = 0; x < 10; x++) {
 		for (int y = 0; y < 10; y++) {
 			for (int team = 0; team < maxTeams; team++) {
@@ -503,4 +513,5 @@ bool Board::checkWin(int* winningTeam, int maxLines, int maxTeams) {
 	if (lines > 0)
 		printf("Amount Lines: %i\n", lines);
 	return false;
+	*/
 }
