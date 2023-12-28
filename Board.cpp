@@ -416,30 +416,129 @@ int Board::lenOfLineDir(int x, int y, int team, int boardDirection, int maxInDir
 		break;
 	}
 	//Cycle through everything
-	int testX = x + xDir;
-	int testY = y + yDir;
+	int testX = x;
+	int testY = y;
 	int inLine = 0;
 	for (int i = 0; i < maxInDir; i++) {
 		Place* testPlace = getPlace(testX, testY);
 		if (!testPlace)
 			return inLine;
-		/*else if (testPlace->teamOwned != team)
-			return inLine;*/
-		/*else if (testPlace->teamOwned > -1 || testPlace->teamOwned != team)
-			return inLine;*/
-		
-		inLine++;
-		//if (testPlace->isFree || testPlace->teamOwned == team) {
-		//	inLine++;
-		//}
-		//else
-		//	break;
+		if (testPlace->teamOwned == team || testPlace->isFree)
+			inLine++;
+		else
+			return inLine;
 		testX += xDir;
 		testY += yDir;
 	}
-	//if (inLine > 0)
-		//printf("InLine: %i\n", inLine);
 	return inLine;
+}
+
+std::vector<Place*> Board::getPlacesInDir(int x, int y, int team, int boardDirection, int maxInDir) {
+	int xDir = 0;
+	int yDir = 0;
+	switch (boardDirection) {
+	case Up:
+		xDir = 0;
+		yDir = 1;
+		break;
+	case UpRight:
+		xDir = 1;
+		yDir = 1;
+		break;
+	case Right:
+		xDir = 1;
+		yDir = 0;
+		break;
+	case DownRight:
+		xDir = 1;
+		yDir = -1;
+		break;
+	case Down:
+		xDir = 0;
+		yDir = -1;
+		break;
+	case DownLeft:
+		xDir = -1;
+		yDir = -1;
+		break;
+	case Left:
+		xDir = -1;
+		yDir = 0;
+		break;
+	case UpLeft:
+		xDir = -1;
+		yDir = 1;
+		break;
+	}
+	int testX = x;
+	int testY = y;
+	std::vector<Place*> toRet;
+	for (int i = 0; i < maxInDir; i++) {
+		Place* p = getPlace(testX, testY);
+		if (!p)
+			break;
+		if (p->isFree || p->teamOwned == team)
+			toRet.push_back(p);
+		testX += xDir;
+		testY += yDir;
+	}
+	return toRet;
+}
+
+std::vector<u64> Board::getEncodedXYInDir(int x, int y, int team, int boardDirection, int maxInDir) {
+	int xDir = 0;
+	int yDir = 0;
+	switch (boardDirection) {
+	case Up:
+		xDir = 0;
+		yDir = 1;
+		break;
+	case UpRight:
+		xDir = 1;
+		yDir = 1;
+		break;
+	case Right:
+		xDir = 1;
+		yDir = 0;
+		break;
+	case DownRight:
+		xDir = 1;
+		yDir = -1;
+		break;
+	case Down:
+		xDir = 0;
+		yDir = -1;
+		break;
+	case DownLeft:
+		xDir = -1;
+		yDir = -1;
+		break;
+	case Left:
+		xDir = -1;
+		yDir = 0;
+		break;
+	case UpLeft:
+		xDir = -1;
+		yDir = 1;
+		break;
+	}
+	int testX = x;
+	int testY = y;
+	std::vector<u64> toRet;
+	for (int i = 0; i < maxInDir; i++) {
+		Place* p = getPlace(testX, testY);
+		if (!p)
+			break;
+		else if (!p->isFree && p->teamOwned != team)
+			break;
+		u64 encoded = testX;
+		encoded = encoded << 32;
+		encoded += testY;
+		toRet.push_back(encoded);
+		testX += xDir;
+		testY += yDir;
+	}
+	return toRet;
 }
 
 int Board::getAmountLines(int* team) {
@@ -491,27 +590,34 @@ int Board::amountPlayed(Card* card) {
 }
 
 bool Board::checkWin(int* winningTeam, int maxLines, int maxTeams) {
-	for (int x = 0; x < 10; x++) {
-		for (int y = 0; y < 10; y++) {
-			int lenDir = lenOfLineDir(x, y, 0, Right, 5);
-			printf("In Dir: %i\n", lenDir);
-		}
-	}
-	return false;
-	/*int lines = 0;
-	for (int x = 0; x < 10; x++) {
-		for (int y = 0; y < 10; y++) {
-			for (int team = 0; team < maxTeams; team++) {
+	std::unordered_map<int, std::vector<u64>> teamsWithEncodedPlaces;
+	for (int team = 0; team < maxTeams; team++) {
+		teamsWithEncodedPlaces.insert(std::pair<int, std::vector<u64>>(team, std::vector<u64>()));
+		for (int x = 0; x < 10; x++) {
+			for (int y = 0; y < 10; y++) {
 				for (int dir = 0; dir < 8; dir++) {
-					int lenInDir = lenOfLineDir(x, y, team, dir, 5);
-					if (lenInDir == 5)
-						lines++;
+					std::vector<u64> encodedWinningPlaces = getEncodedXYInDir(x, y, team, dir, 5);
+					if (encodedWinningPlaces.size() >= 5) {
+						auto teamPlaces = teamsWithEncodedPlaces.find(team);
+						std::vector<u64>* modArr = &teamPlaces->second;
+						for (int i = 0; i < encodedWinningPlaces.size(); i++)
+							modArr->push_back(encodedWinningPlaces[i]);
+					}
 				}
 			}
 		}
 	}
-	if (lines > 0)
-		printf("Amount Lines: %i\n", lines);
+	for (auto eTeam : teamsWithEncodedPlaces) {
+		std::unordered_map<u64, u64> amountAtPlace;
+		std::vector<u64>* places = &eTeam.second;
+		for (int i = 0; i < places->size(); i++) {
+			auto didFind = amountAtPlace.find(places->at(i));
+			if (didFind == amountAtPlace.end())
+				amountAtPlace.insert(std::pair<u64, u64>(places->at(i), 0));
+			else {
+
+			}
+		}
+	}
 	return false;
-	*/
 }

@@ -1,5 +1,9 @@
 #pragma once
 #include "Card.h"
+#include <unordered_map>
+#include <vector>
+
+typedef unsigned long long u64;
 
 enum BoardDirection {
 	Up,
@@ -38,7 +42,11 @@ public:
 	bool playPeice(int x, int y, int team);
 	//Returns the amount of peices on the team that are in that direction
 	int lenOfLineDir(int x, int y, int team, int boardDirection, int maxInDir);
-	int getAmountLines(int* team);//Returns the team with the most amount of lines
+	std::vector<Place*> getPlacesInDir(int x, int y, int team, int boardDirection, int maxInDir);
+	//Returns list of encoded x,y where high 32bits are x, low 32bits are y
+	std::vector<u64> getEncodedXYInDir(int x, int y, int team, int boardDirection, int maxInDir);
+	//Returns the team with the most amount of lines
+	int getAmountLines(int* team);
 	//For use with AI
 	int weighPoint(int team, int x, int y);
 	int amountPlayed(Card* card);
