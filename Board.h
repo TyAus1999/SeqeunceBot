@@ -45,6 +45,10 @@ public:
 	std::vector<Place*> getPlacesInDir(int x, int y, int team, int boardDirection, int maxInDir);
 	//Returns list of encoded x,y where high 32bits are x, low 32bits are y
 	std::vector<u64> getEncodedXYInDir(int x, int y, int team, int boardDirection, int maxInDir);
+	//Decodes the xy from the u64, returns them to the pointers
+	void decodeXY(u64 xy, int* x, int* y);
+	//Encodes the XY and returns the encoded value
+	u64 encodeXY(int x, int y);
 	//Returns the team with the most amount of lines
 	int getAmountLines(int* team);
 	//For use with AI

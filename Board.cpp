@@ -531,14 +531,27 @@ std::vector<u64> Board::getEncodedXYInDir(int x, int y, int team, int boardDirec
 			break;
 		else if (!p->isFree && p->teamOwned != team)
 			break;
-		u64 encoded = testX;
-		encoded = encoded << 32;
-		encoded += testY;
+		u64 encoded = encodeXY(testX, testY);
 		toRet.push_back(encoded);
 		testX += xDir;
 		testY += yDir;
 	}
 	return toRet;
+}
+
+void Board::decodeXY(u64 xy, int* x, int* y) {
+	u64 temp = xy >> 32;
+	*x = (int)temp;
+	temp = xy<<32;
+	temp = temp >> 32;
+	*y = (int)temp;
+}
+
+u64 Board::encodeXY(int x, int y) {
+	u64 out = x;
+	out = out << 32;
+	out += y;
+	return out;
 }
 
 int Board::getAmountLines(int* team) {
@@ -590,6 +603,56 @@ int Board::amountPlayed(Card* card) {
 }
 
 bool Board::checkWin(int* winningTeam, int maxLines, int maxTeams) {
+	//Record how many in direction, with max in direction being 10
+	//Also record the direction when the length is greater than 5 as that would consitiute a single win
+	struct potentialWin {
+		std::vector<u64> xyInDir;
+		int direction;
+		int team;
+	};
+	std::vector<potentialWin> pWins;
+	for (int team = 0; team < maxTeams; team++) {
+		for (int x = 0; x < 10; x++) {
+			for (int y = 0; y < 10; y++) {
+				for (int dir = 0; dir < 8; dir++) {
+					std::vector<u64> inDir = getEncodedXYInDir(x, y, team, dir, 10);
+					if (inDir.size() < 5)
+						continue;
+					potentialWin toAdd;
+					toAdd.team = team;
+					for (int i = 0; i < inDir.size(); i++)
+						toAdd.xyInDir.push_back(inDir[i]);
+					toAdd.direction = dir;
+					pWins.push_back(toAdd);
+				}
+			}
+		}
+	}
+	//key is the encoded coord, int is the amount times counted
+	std::unordered_map<u64, int> amountUsed;
+	for (int i = 0; i < pWins.size(); i++) {
+		potentialWin* current = &pWins[i];
+		std::vector<u64>* cXY = &current->xyInDir;
+		//printf("Potential Win Team: %i\n", current->team);
+		for (int c = 0; c < cXY->size(); c++) {
+			u64 coord = cXY->at(c);
+			auto didFind = amountUsed.find(coord);
+			if (didFind == amountUsed.end())
+				amountUsed.insert(std::pair<u64, int>(coord, 1));
+			else
+				didFind->second = didFind->second + 1;
+			//printf("\tX: %i, Y: %i\n", x, y);
+		}
+		//printf("\n");
+	}
+
+	for (auto c : amountUsed) {
+		int x, y;
+		decodeXY(c.first, &x, &y);
+		printf("X: %i, Y: %i, Amount: %i\n", x, y, c.second);
+	}
+	return false;
+	/*
 	std::unordered_map<int, std::vector<u64>> teamsWithEncodedPlaces;
 	for (int team = 0; team < maxTeams; team++) {
 		teamsWithEncodedPlaces.insert(std::pair<int, std::vector<u64>>(team, std::vector<u64>()));
@@ -607,17 +670,31 @@ bool Board::checkWin(int* winningTeam, int maxLines, int maxTeams) {
 			}
 		}
 	}
+	//If places are used more than twice, it is not a valid win
+	u64 counter = 0;
 	for (auto eTeam : teamsWithEncodedPlaces) {
 		std::unordered_map<u64, u64> amountAtPlace;
 		std::vector<u64>* places = &eTeam.second;
 		for (int i = 0; i < places->size(); i++) {
 			auto didFind = amountAtPlace.find(places->at(i));
 			if (didFind == amountAtPlace.end())
-				amountAtPlace.insert(std::pair<u64, u64>(places->at(i), 0));
-			else {
-
+				amountAtPlace.insert(std::pair<u64, u64>(places->at(i), 1));
+			else if (didFind->second >= 2) {
+				u64 coord=didFind->first;
+				int x, y;
+				decodeXY(coord, &x, &y);
+				//printf("Found more than twice X: %i, Y: %i\n", x, y);
 			}
+			else
+				didFind->second = didFind->second + 1;
+		}
+		for (auto p : amountAtPlace) {
+			u64 coord = p.first;
+			int x, y;
+			decodeXY(coord, &x, &y);
+			printf("X: %i, Y: %i, Amount: %llu\n", x, y, p.second);
 		}
 	}
 	return false;
+	*/
 }

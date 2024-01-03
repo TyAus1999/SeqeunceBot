@@ -5,6 +5,8 @@ void boardCheckWinTest() {
 	Board b;
 	for (int i = 0; i < 6; i++)
 		b.playPeice(2 + i, 2, 0);
+	for (int i = 0; i < 5; i++)
+		b.playPeice(4, 2 + i, 0);
 	b.drawBoard();
 	int winningTeam;
 	if (b.checkWin(&winningTeam, 2, 2)) {
