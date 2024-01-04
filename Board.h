@@ -20,9 +20,12 @@ struct Place {
 	Card card;
 	int teamOwned;//-1 when not owned
 	bool isFree;
+	//Used to show win when printing board
+	bool showWin;
 	Place() {
 		teamOwned = -1;
 		isFree = false;
+		showWin = false;
 	}
 	void print() {
 		card.print();
@@ -55,4 +58,5 @@ public:
 	int weighPoint(int team, int x, int y);
 	int amountPlayed(Card* card);
 	bool checkWin(int* winningTeam, int maxLines, int maxTeams);
+	bool hasValidPlaceToPlay();
 };

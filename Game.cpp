@@ -65,8 +65,13 @@ void Game::setPlayerAI(int player) {
 
 bool Game::tick() {
 	//b.drawBoard();
+	if (!b.hasValidPlaceToPlay()) {
+		printf("No More Places To Play!\n");
+		return false;
+	}
 	int winning;
 	if (b.checkWin(&winning, 2, amountTeams)) {
+		b.drawBoard();
 		printf("Winning Team: %i\n", winning);
 		return false;
 	}

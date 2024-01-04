@@ -24,24 +24,39 @@ void Board::drawBoard() {
 		for (int x = 0; x < 10; x++) {
 			line += "|";
 			Place* p = getPlace(x, y);
-			if (p->isFree) {
+			if (p->isFree && !p->showWin) {
 				line += "  F  ";
+				continue;
+			}
+			else if (p->isFree && p->showWin) {
+				line += "W F  ";
 				continue;
 			}
 			Card* c = &p->card;
 
 			if (c->face > 10) {
 				std::string faceName = getFaceName(c->face);
-				line += " " + faceName.substr(0, 1);
+				if (!p->showWin)
+					line += " " + faceName.substr(0, 1);
+				else line += "W" + faceName.substr(0, 1);
 			}
 			else if (c->face == 10) {
-				line += "10";
+				if (!p->showWin)
+					line += "10";
+				else
+					line += "W10";
 			}
 			else if (c->face == 1) {
-				line += " A";
+				if (!p->showWin)
+					line += " A";
+				else
+					line += "WA";
 			}
 			else {
-				line += " " + std::to_string(c->face);
+				if (!p->showWin)
+					line += " " + std::to_string(c->face);
+				else
+					line += "W" + std::to_string(c->face);
 			}
 			std::string suit = getSuitName(c->suit);
 			line += suit.substr(0, 1);
@@ -607,6 +622,7 @@ bool Board::checkWin(int* winningTeam, int maxLines, int maxTeams) {
 		//u64 for coord, bool just because I need a pair value thing
 		std::unordered_map<u64, bool> usedCoords;
 		int lines = 0;
+		std::vector<u64> coordsForWin;
 		for (int x = 0; x < 10; x++) {
 			for (int y = 0; y < 10; y++) {
 				for (int dir = 0; dir < 8; dir++) {
@@ -617,6 +633,8 @@ bool Board::checkWin(int* winningTeam, int maxLines, int maxTeams) {
 					else if (size > 5)
 						continue;
 					lines++;
+					for (int i = 0; i < size; i++)
+						coordsForWin.push_back(inDir[i]);
 					//for (int i = 0; i < size; i++) {
 					//	auto didFind = usedCoords.find(inDir[i]);
 					//	if (didFind != usedCoords.end())
@@ -628,6 +646,12 @@ bool Board::checkWin(int* winningTeam, int maxLines, int maxTeams) {
 		}
 		if (lines/2 >= maxLines) {
 			*winningTeam = team;
+			for (int i = 0; i < coordsForWin.size(); i++) {
+				int x, y;
+				decodeXY(coordsForWin[i], &x, &y);
+				Place* p = getPlace(x, y);
+				p->showWin = true;
+			}
 			return true;
 		}
 		//for (auto coord : usedCoords) {
@@ -665,4 +689,18 @@ bool Board::checkWin(int* winningTeam, int maxLines, int maxTeams) {
 	//	}
 	//}
 	//return false;
+}
+
+bool Board::hasValidPlaceToPlay() {
+	u64 validPlaces = 0;
+	for (int x = 0; x < 10; x++) {
+		for (int y = 0; y < 10; y++) {
+			Place* p = getPlace(x, y);
+			if (!p)
+				continue;
+			if (p->teamOwned == -1 && !p->isFree)
+				validPlaces++;
+		}
+	}
+	return validPlaces > 0;
 }
