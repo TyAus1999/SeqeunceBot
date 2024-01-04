@@ -3,7 +3,7 @@
 
 void boardCheckWinTest() {
 	Board b;
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 7; i++)
 		b.playPeice(2 + i, 2, 0);
 	for (int i = 0; i < 5; i++)
 		b.playPeice(4, 2 + i, 0);
