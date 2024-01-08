@@ -25,11 +25,11 @@ void Board::drawBoard() {
 			line += "|";
 			Place* p = getPlace(x, y);
 			if (p->isFree && !p->showWin) {
-				line += "  F  ";
+				line += "   F  ";
 				continue;
 			}
 			else if (p->isFree && p->showWin) {
-				line += "W F  ";
+				line += " W F  ";
 				continue;
 			}
 			Card* c = &p->card;
@@ -37,26 +37,26 @@ void Board::drawBoard() {
 			if (c->face > 10) {
 				std::string faceName = getFaceName(c->face);
 				if (!p->showWin)
-					line += " " + faceName.substr(0, 1);
-				else line += "W" + faceName.substr(0, 1);
+					line += "  " + faceName.substr(0, 1);
+				else line += " W" + faceName.substr(0, 1);
 			}
 			else if (c->face == 10) {
 				if (!p->showWin)
-					line += "10";
+					line += " 10";
 				else
 					line += "W10";
 			}
 			else if (c->face == 1) {
 				if (!p->showWin)
-					line += " A";
+					line += "  A";
 				else
-					line += "WA";
+					line += " WA";
 			}
 			else {
 				if (!p->showWin)
-					line += " " + std::to_string(c->face);
+					line += "  " + std::to_string(c->face);
 				else
-					line += "W" + std::to_string(c->face);
+					line += " W" + std::to_string(c->face);
 			}
 			std::string suit = getSuitName(c->suit);
 			line += suit.substr(0, 1);
@@ -376,6 +376,8 @@ void Board::initBoard() {
 }
 
 Place* Board::getPlace(int x, int y) {
+	if (x >= 10 || y >= 10)
+		return 0;
 	int offset = (y * 10) + x;
 	if (offset > 99 || offset < 0)
 		return 0;
