@@ -229,72 +229,72 @@ Card Game::getValidRandomPickup() {
 }
 
 bool Game::getAiBestLocation(int player, int* x, int* y, int* cardIndex) {
-	Player* p = &players[player];
-	struct xy {
-		int x;
-		int y;
-		int cardIndex;
-	};
-	std::vector<xy> validLocations;
-	//Checking for jacks
-	int jack2EyeCardIndex = -1;
-	if (p->has2EyedJack(&jack2EyeCardIndex)) {
-		for (int tx = 0; tx < 10; tx++) {
-			for (int ty = 0; ty < 10; ty++) {
-				Place* place = b.getPlace(tx, ty);
-				if (place->isFree || place->teamOwned != -1)
-					continue;
-				xy toAdd;
-				toAdd.x = tx;
-				toAdd.y = ty;
-				toAdd.cardIndex = jack2EyeCardIndex;
-				validLocations.push_back(toAdd);
-			}
-		}
-	}
-	//checking for single eye jacks
-	int jack1EyeCardIndex = -1;
-	if (p->has1EyedJack(&jack1EyeCardIndex)) {
-		for (int tx = 0; tx < 10; tx++) {
-			for (int ty = 0; ty < 10; ty++) {
-				Place* place = b.getPlace(tx, ty);
-				if (place->isFree || place->teamOwned == -1 || place->teamOwned == p->team)
-					continue;
+	//Player* p = &players[player];
+	//struct xy {
+	//	int x;
+	//	int y;
+	//	int cardIndex;
+	//};
+	//std::vector<xy> validLocations;
+	////Checking for jacks
+	//int jack2EyeCardIndex = -1;
+	//if (p->has2EyedJack(&jack2EyeCardIndex)) {
+	//	for (int tx = 0; tx < 10; tx++) {
+	//		for (int ty = 0; ty < 10; ty++) {
+	//			Place* place = b.getPlace(tx, ty);
+	//			if (place->isFree || place->teamOwned != -1)
+	//				continue;
+	//			xy toAdd;
+	//			toAdd.x = tx;
+	//			toAdd.y = ty;
+	//			toAdd.cardIndex = jack2EyeCardIndex;
+	//			validLocations.push_back(toAdd);
+	//		}
+	//	}
+	//}
+	////checking for single eye jacks
+	//int jack1EyeCardIndex = -1;
+	//if (p->has1EyedJack(&jack1EyeCardIndex)) {
+	//	for (int tx = 0; tx < 10; tx++) {
+	//		for (int ty = 0; ty < 10; ty++) {
+	//			Place* place = b.getPlace(tx, ty);
+	//			if (place->isFree || place->teamOwned == -1 || place->teamOwned == p->team)
+	//				continue;
 
-			}
-		}
-	}
-	//Checking for all of the cards that are in hand
-	for (int tY = 0; tY < 10; tY++) {
-		for (int tX = 0; tX < 10; tX++) {
-			Place* tempPlace = b.getPlace(tX, tY);
-			if (tempPlace->teamOwned != -1)
-				continue;
-			int cardIndex;
-			if (p->isInHand(&tempPlace->card, &cardIndex)) {
-				xy toAdd;
-				toAdd.x = tX;
-				toAdd.y = tY;
-				toAdd.cardIndex = cardIndex;
-				validLocations.push_back(toAdd);
-			}
-		}
-	}
-	std::map<int, xy> weightedLocations;
-	for (int i = 0; i < validLocations.size(); i++) {
-		std::pair<int, xy> toAdd;
-		xy* loc = &validLocations[i];
-		toAdd.first = b.weighPoint(p->team, loc->x, loc->y);
-		printf("Weight: %i, X: %i, Y: %i, Team: %i\n", toAdd.first, loc->x, loc->y, p->team);
-		toAdd.second = *loc;
-		if (toAdd.first > -1)
-			weightedLocations.insert(toAdd);
-	}
-	if (weightedLocations.empty())
-		return false;
-	auto endMinus = std::prev(weightedLocations.end());
-	*x = endMinus->second.x;
-	*y = endMinus->second.y;
-	*cardIndex = endMinus->second.cardIndex;
+	//		}
+	//	}
+	//}
+	////Checking for all of the cards that are in hand
+	//for (int tY = 0; tY < 10; tY++) {
+	//	for (int tX = 0; tX < 10; tX++) {
+	//		Place* tempPlace = b.getPlace(tX, tY);
+	//		if (tempPlace->teamOwned != -1)
+	//			continue;
+	//		int cardIndex;
+	//		if (p->isInHand(&tempPlace->card, &cardIndex)) {
+	//			xy toAdd;
+	//			toAdd.x = tX;
+	//			toAdd.y = tY;
+	//			toAdd.cardIndex = cardIndex;
+	//			validLocations.push_back(toAdd);
+	//		}
+	//	}
+	//}
+	//std::map<int, xy> weightedLocations;
+	//for (int i = 0; i < validLocations.size(); i++) {
+	//	std::pair<int, xy> toAdd;
+	//	xy* loc = &validLocations[i];
+	//	toAdd.first = b.weighPoint(p->team, loc->x, loc->y);
+	//	printf("Weight: %i, X: %i, Y: %i, Team: %i\n", toAdd.first, loc->x, loc->y, p->team);
+	//	toAdd.second = *loc;
+	//	if (toAdd.first > -1)
+	//		weightedLocations.insert(toAdd);
+	//}
+	//if (weightedLocations.empty())
+	//	return false;
+	//auto endMinus = std::prev(weightedLocations.end());
+	//*x = endMinus->second.x;
+	//*y = endMinus->second.y;
+	//*cardIndex = endMinus->second.cardIndex;
 	return true;
 }

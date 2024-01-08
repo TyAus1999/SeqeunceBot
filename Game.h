@@ -26,5 +26,8 @@ public:
 	Card* getValidRandomCards(int amount);
 	//Used for getting a random valid card that has not been played yet
 	Card getValidRandomPickup();
+	
+
 	bool getAiBestLocation(int player, int* x, int* y, int* cardIndex);
+
 };

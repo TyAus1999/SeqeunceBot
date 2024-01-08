@@ -35,10 +35,24 @@ bool Player::isInHand(Card* c, int* cardIndex) {
 }
 
 bool Player::has2EyedJack(int* cardIndex) {
+	for (int i = 0; i < cardsInHand; i++) {
+		Card* c = &hand[i];
+		if (c->face != Jack || !c->is2Eye)
+			continue;
+		*cardIndex = i;
+		return true;
+	}
 	return false;
 }
 
 bool Player::has1EyedJack(int* cardIndex) {
+	for (int i = 0; i < cardsInHand; i++) {
+		Card* c = &hand[i];
+		if (c->face != Jack || c->is2Eye)
+			continue;
+		*cardIndex = i;
+		return true;
+	}
 	return false;
 }
 

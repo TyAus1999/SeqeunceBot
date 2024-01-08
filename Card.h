@@ -67,6 +67,7 @@ class Card {
 public:
 	int suit;
 	int face;
+	bool is2Eye;
 	Card(int s = NoSuit, int f = NoFace);
 	/*
 	Print function,

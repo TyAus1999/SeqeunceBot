@@ -3,6 +3,10 @@
 Card::Card(int suit, int face) {
 	this->suit = suit;
 	this->face = face;
+	if (face == Jack && (suit == Clubs || suit == Diamonds))
+		is2Eye = true;
+	else
+		is2Eye = false;
 }
 
 void Card::print() {

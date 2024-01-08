@@ -16,4 +16,5 @@ public:
 	bool has2EyedJack(int* cardIndex);
 	bool has1EyedJack(int* cardIndex);
 	void printHand();
+
 };
