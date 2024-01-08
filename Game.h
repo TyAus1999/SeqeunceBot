@@ -29,5 +29,6 @@ public:
 	
 
 	bool getAiBestLocation(int player, int* x, int* y, int* cardIndex);
-
+	bool getAIBestLocation2(int player, int* x, int* y, int* cardIndex);
+	int aiWeighPoint(int x, int y, int team);
 };

@@ -93,7 +93,11 @@ bool Game::tick() {
 		}
 		std::string faceName = getFaceName(p->hand[cardIndex].face);
 		std::string suitName = getSuitName(p->hand[cardIndex].suit);
-		printf("Ai Played %s, %s, at X: %i, Y: %i\n", faceName.c_str(), suitName.c_str(), x, y);
+		printf("Ai Played %s of %s, at X: %i, Y: %i\n", faceName.c_str(), suitName.c_str(), x, y);
+		getAIBestLocation2(currentPlayerTurn, &x, &y, &cardIndex);
+		faceName = getFaceName(p->hand[cardIndex].face);
+		suitName = getSuitName(p->hand[cardIndex].suit);
+		printf("AI2 Played %s of %s, at X: %i, Y: %i\n", faceName.c_str(), suitName.c_str(), x, y);
 		b.drawBoard();
 		Card pickedUp = getValidRandomPickup();
 		printf("AI Picked up\n");
@@ -229,72 +233,134 @@ Card Game::getValidRandomPickup() {
 }
 
 bool Game::getAiBestLocation(int player, int* x, int* y, int* cardIndex) {
-	//Player* p = &players[player];
-	//struct xy {
-	//	int x;
-	//	int y;
-	//	int cardIndex;
-	//};
-	//std::vector<xy> validLocations;
-	////Checking for jacks
-	//int jack2EyeCardIndex = -1;
-	//if (p->has2EyedJack(&jack2EyeCardIndex)) {
-	//	for (int tx = 0; tx < 10; tx++) {
-	//		for (int ty = 0; ty < 10; ty++) {
-	//			Place* place = b.getPlace(tx, ty);
-	//			if (place->isFree || place->teamOwned != -1)
-	//				continue;
-	//			xy toAdd;
-	//			toAdd.x = tx;
-	//			toAdd.y = ty;
-	//			toAdd.cardIndex = jack2EyeCardIndex;
-	//			validLocations.push_back(toAdd);
-	//		}
-	//	}
-	//}
-	////checking for single eye jacks
-	//int jack1EyeCardIndex = -1;
-	//if (p->has1EyedJack(&jack1EyeCardIndex)) {
-	//	for (int tx = 0; tx < 10; tx++) {
-	//		for (int ty = 0; ty < 10; ty++) {
-	//			Place* place = b.getPlace(tx, ty);
-	//			if (place->isFree || place->teamOwned == -1 || place->teamOwned == p->team)
-	//				continue;
+	Player* p = &players[player];
+	struct xy {
+		int x;
+		int y;
+		int cardIndex;
+	};
+	std::vector<xy> validLocations;
+	//Checking for jacks
+	int jack2EyeCardIndex = -1;
+	if (p->has2EyedJack(&jack2EyeCardIndex)) {
+		for (int tx = 0; tx < 10; tx++) {
+			for (int ty = 0; ty < 10; ty++) {
+				Place* place = b.getPlace(tx, ty);
+				if (place->isFree || place->teamOwned != -1)
+					continue;
+				xy toAdd;
+				toAdd.x = tx;
+				toAdd.y = ty;
+				toAdd.cardIndex = jack2EyeCardIndex;
+				validLocations.push_back(toAdd);
+			}
+		}
+	}
+	//checking for single eye jacks
+	int jack1EyeCardIndex = -1;
+	if (p->has1EyedJack(&jack1EyeCardIndex)) {
+		for (int tx = 0; tx < 10; tx++) {
+			for (int ty = 0; ty < 10; ty++) {
+				Place* place = b.getPlace(tx, ty);
+				if (place->isFree || place->teamOwned == -1 || place->teamOwned == p->team)
+					continue;
 
-	//		}
-	//	}
-	//}
-	////Checking for all of the cards that are in hand
-	//for (int tY = 0; tY < 10; tY++) {
-	//	for (int tX = 0; tX < 10; tX++) {
-	//		Place* tempPlace = b.getPlace(tX, tY);
-	//		if (tempPlace->teamOwned != -1)
-	//			continue;
-	//		int cardIndex;
-	//		if (p->isInHand(&tempPlace->card, &cardIndex)) {
-	//			xy toAdd;
-	//			toAdd.x = tX;
-	//			toAdd.y = tY;
-	//			toAdd.cardIndex = cardIndex;
-	//			validLocations.push_back(toAdd);
-	//		}
-	//	}
-	//}
-	//std::map<int, xy> weightedLocations;
-	//for (int i = 0; i < validLocations.size(); i++) {
-	//	std::pair<int, xy> toAdd;
-	//	xy* loc = &validLocations[i];
-	//	toAdd.first = b.weighPoint(p->team, loc->x, loc->y);
-	//	printf("Weight: %i, X: %i, Y: %i, Team: %i\n", toAdd.first, loc->x, loc->y, p->team);
-	//	toAdd.second = *loc;
-	//	if (toAdd.first > -1)
-	//		weightedLocations.insert(toAdd);
-	//}
-	//if (weightedLocations.empty())
-	//	return false;
-	//auto endMinus = std::prev(weightedLocations.end());
-	//*x = endMinus->second.x;
-	//*y = endMinus->second.y;
-	//*cardIndex = endMinus->second.cardIndex;
+			}
+		}
+	}
+	//Checking for all of the cards that are in hand
+	for (int tY = 0; tY < 10; tY++) {
+		for (int tX = 0; tX < 10; tX++) {
+			Place* tempPlace = b.getPlace(tX, tY);
+			if (tempPlace->teamOwned != -1)
+				continue;
+			int cardIndex;
+			if (p->isInHand(&tempPlace->card, &cardIndex)) {
+				xy toAdd;
+				toAdd.x = tX;
+				toAdd.y = tY;
+				toAdd.cardIndex = cardIndex;
+				validLocations.push_back(toAdd);
+			}
+		}
+	}
+	std::map<int, xy> weightedLocations;
+	for (int i = 0; i < validLocations.size(); i++) {
+		std::pair<int, xy> toAdd;
+		xy* loc = &validLocations[i];
+		toAdd.first = b.weighPoint(p->team, loc->x, loc->y);
+		//printf("Weight: %i, X: %i, Y: %i, Team: %i\n", toAdd.first, loc->x, loc->y, p->team);
+		toAdd.second = *loc;
+		if (toAdd.first > -1)
+			weightedLocations.insert(toAdd);
+	}
+	if (weightedLocations.empty())
+		return false;
+	auto endMinus = std::prev(weightedLocations.end());
+	*x = endMinus->second.x;
+	*y = endMinus->second.y;
+	*cardIndex = endMinus->second.cardIndex;
 	return true;
+}
+
+bool Game::getAIBestLocation2(int player, int* x, int* y, int* cardIndex) {
+	Player* p = &players[player];
+	struct validLocation {
+		int x, y;
+		int cardIndex;
+	};
+	std::vector<validLocation> validStandardLocations;
+	std::vector<validLocation> jack1EyeLocations;
+	std::vector<validLocation> jack2EyeLocations;
+	int jack1Eye = -1;
+	int jack2Eye = -1;
+	p->has1EyedJack(&jack1Eye);
+	p->has2EyedJack(&jack2Eye);
+	for (int testX = 0; testX < 10; testX++) {
+		for (int testY = 0; testY < 10; testY++) {
+			Place* pl = b.getPlace(testX, testY);
+			if (!pl)
+				continue;
+			if (pl->isFree)
+				continue;
+			validLocation current;
+			current.x = testX;
+			current.y = testY;
+			if (pl->teamOwned == -1) {
+				if (jack2Eye > -1) {
+					current.cardIndex = jack2Eye;
+					jack2EyeLocations.push_back(current);
+				}
+				if (p->isInHand(&pl->card, &current.cardIndex))
+					validStandardLocations.push_back(current);
+			}
+			else if (pl->teamOwned != p->team && jack1Eye > -1) {
+				current.cardIndex = jack1Eye;
+				jack1EyeLocations.push_back(current);
+			}
+		}
+	}
+	std::map<int, validLocation> standardLocationWeights;
+	for (int i = 0; i < validStandardLocations.size(); i++) {
+		validLocation vl = validStandardLocations[i];
+		int w = aiWeighPoint(vl.x, vl.y, p->team);
+		standardLocationWeights.insert_or_assign(w, vl);
+	}
+	std::map<int, validLocation> jack1EyeLocationWeights;
+	for (int i = 0; i < jack1EyeLocations.size(); i++) {
+		validLocation vl = jack1EyeLocations[i];
+		int w = aiWeighPoint(vl.x, vl.y, p->team);
+		jack1EyeLocationWeights.insert_or_assign(w, vl);
+	}
+	std::map<int, validLocation> jack2EyeLocationWeights;
+	for (int i = 0; i < jack2EyeLocations.size(); i++) {
+		validLocation vl = jack2EyeLocations[i];
+		int w = aiWeighPoint(vl.x, vl.y, p->team);
+		jack2EyeLocationWeights.insert_or_assign(w, vl);
+	}
+	return false;
+}
+
+int Game::aiWeighPoint(int x, int y, int team) {
+	return 0;
 }
