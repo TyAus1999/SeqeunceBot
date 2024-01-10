@@ -13,7 +13,9 @@ void processInput(GLFWwindow* window) {
 int main() {
 	Engine e;
 	e.init();
+	u64 startTime = getCurrentMillis();
 	while (e.windowLogic()) {
+		e.inputs();
 		e.gameLogic();
 		e.render();
 	}

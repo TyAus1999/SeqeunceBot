@@ -1,5 +1,9 @@
 #include "Engine.h"
 
+void Engine::initShaders() {
+
+}
+
 Engine::Engine() {
 	window = 0;
 }
@@ -28,27 +32,15 @@ void Engine::init() {
 		return;
 	}
 	glViewport(0, 0, 800, 800);
+	initShaders();
 }
 
-//void openglTest() {
-//	while (!)
-//	{
-//		// input
-//		// -----
-//		processInput(window);
-//
-//		// render
-//		// ------
-//		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-//		glClear(GL_COLOR_BUFFER_BIT);
-//
-//		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-//		// -------------------------------------------------------------------------------
-//		
-//	}
-//	
-//	return;
-//}
+void Engine::inputs() {
+	int leftMouse = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+	if (leftMouse == GLFW_PRESS) {
+		printf("MouseDown\n");
+	}
+}
 
 bool Engine::windowLogic() {
 	bool shouldExit=!glfwWindowShouldClose(window);
@@ -62,5 +54,7 @@ void Engine::gameLogic() {
 }
 
 void Engine::render() {
-
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
