@@ -9,6 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 typedef unsigned long long u64;
+typedef unsigned int u32;
 
 static u64 getCurrentMillis() {
 	using namespace std::chrono;
