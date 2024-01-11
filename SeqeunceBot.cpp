@@ -12,8 +12,10 @@ void processInput(GLFWwindow* window) {
 
 int main() {
 	Engine e;
-	e.init();
-	u64 startTime = getCurrentMillis();
+	if (!e.init()) {
+		printf("Could not init Engine!\n");
+		return -1;
+	}
 	while (e.windowLogic()) {
 		e.inputs();
 		e.gameLogic();

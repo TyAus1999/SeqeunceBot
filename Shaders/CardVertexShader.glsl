@@ -8,6 +8,7 @@ layout(location=0)in vec3 startLocation;
 
 uniform mat4 projection;
 uniform mat4 view;
+uniform mat4 model;
 uniform float currentTime;
 
 mat4 getTranslationModel(vec3 loc){
@@ -27,5 +28,5 @@ vec3 getCurrentPosition(vec3 start,vec3 end,vec3 direction, float speed, float t
 void main(){
     //vec3 loc=getCurrentPosition(startLocation, targetLocation,directionNormalized, moveSpeed, timeToReachTarget, timeOfMovementOrder);
     //mat4 model=getTranslationModel(loc);
-    gl_Position=vec4(startLocation, 1);
+    gl_Position=projection*view*model*vec4(startLocation,1);
 }
