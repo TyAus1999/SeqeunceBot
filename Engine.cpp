@@ -17,12 +17,19 @@ void Engine::initVertexData() {
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	cardDrawVertex toGPU[6];
+	//toGPU[0].location = glm::vec3(-0.25, 0.5, 0);
+	//toGPU[1].location = glm::vec3(0.25, 0.5, 0);
+	//toGPU[2].location = glm::vec3(-0.25, -0.5, 0);
+	//toGPU[3] = toGPU[2];
+	//toGPU[4] = toGPU[1];
+	//toGPU[5].location = glm::vec3(-0.25, -0.5, 0);
 	toGPU[0].location = glm::vec3(-0.25, 0.5, 0);
-	toGPU[1].location = glm::vec3(0.25, 0.5, 0);
-	toGPU[2].location = glm::vec3(-0.25, -0.5, 0);
-	toGPU[3] = toGPU[2];
-	toGPU[4] = toGPU[1];
-	toGPU[5].location = glm::vec3(-0.25, -0.5, 0);
+	toGPU[1].location = glm::vec3(-0.25, -0.5, 0);
+	toGPU[2].location = glm::vec3(0.25, -0.5, 0);
+
+	toGPU[3].location = glm::vec3(0.25, -0.5, 0);
+	toGPU[4].location = glm::vec3(0.25, 0.5, 0);
+	toGPU[5].location = glm::vec3(-0.25, 0.5, 0);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cardDrawVertex) * 6, toGPU, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(cardDrawVertex), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -66,9 +73,9 @@ bool Engine::init() {
 	glViewport(0, 0, 800, 800);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_FRONT);
-	//glFrontFace(GL_CW);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
+	glFrontFace(GL_CW);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_MULTISAMPLE);
 	initShaders();
@@ -76,7 +83,7 @@ bool Engine::init() {
 
 	playerCam = new Camera(glm::vec3(0, 0, 1), glm::vec3(0), 100);
 	playerCam->onFrameStart(800.f / 800.f);
-	playerCam->setLocation(glm::vec3(0, 0, 100));
+	playerCam->setLocation(glm::vec3(0, 0, 1));
 	playerCam->lookAt(glm::vec3(0));
 	projection = playerCam->getProjection();
 
@@ -116,7 +123,7 @@ void Engine::render() {
 	glUniformMatrix4fv(cardShaderViewLocation, 1, GL_FALSE, v);
 	glUniformMatrix4fv(cardShaderModelLocation, 1, GL_FALSE, &model[0][0]);
 	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glfwSwapBuffers(window);
 }
