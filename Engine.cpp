@@ -30,6 +30,8 @@ void Engine::initVertexData() {
 	toGPU[3].location = glm::vec3(0.25, -0.5, 0);
 	toGPU[4].location = glm::vec3(0.25, 0.5, 0);
 	toGPU[5].location = glm::vec3(-0.25, 0.5, 0);
+	for (int i = 0; i < 6; i++)
+		toGPU[i].location *= 10;
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cardDrawVertex) * 6, toGPU, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(cardDrawVertex), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -83,12 +85,15 @@ bool Engine::init() {
 
 	playerCam = new Camera(glm::vec3(0, 0, 1), glm::vec3(0), 100);
 	playerCam->onFrameStart(800.f / 800.f);
-	playerCam->setLocation(glm::vec3(0, 0, 1));
+	playerCam->setLocation(glm::vec3(0, 0, 100));
 	playerCam->lookAt(glm::vec3(0));
 	projection = playerCam->getProjection();
 
 	engineStartTime = getCurrentMillis();
 	printf("Init time: %llums\n", getCurrentMillis() - startTime);
+
+	testCard = Drawable(DrawableTypeCard);
+
 	return true;
 }
 
@@ -96,6 +101,7 @@ void Engine::inputs() {
 	int leftMouse = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 	if (leftMouse == GLFW_PRESS) {
 		//printf("MouseDown\n");
+		//testCard.addMovement(glm::vec3(0.001, 0, 0), deltaTime);
 	}
 }
 
@@ -106,7 +112,19 @@ bool Engine::windowLogic() {
 }
 
 void Engine::gameLogic() {
-
+	static bool dir = true;
+	glm::vec3 loc = testCard.getLocation();
+	if (dir) {
+		testCard.addMovement(glm::vec3(0.1, 0, 0), deltaTime);
+		if (loc.x > 5)
+			dir = false;
+	}
+	else {
+		testCard.addMovement(glm::vec3(-0.1, 0, 0), deltaTime);
+		if (loc.x < -5)
+			dir = true;
+	}
+	//printVec3(testCard.getLocation());
 }
 
 void Engine::render() {
@@ -116,14 +134,30 @@ void Engine::render() {
 	glm::mat4 view = playerCam->getView();
 	float* p = &projection[0][0];
 	float* v = &view[0][0];
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0, 0, 0));
+	/*glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(0, 0, 0));*/
 	cardShader.use();
 	glUniformMatrix4fv(cardShaderProjectionLocation, 1, GL_FALSE, p);
 	glUniformMatrix4fv(cardShaderViewLocation, 1, GL_FALSE, v);
-	glUniformMatrix4fv(cardShaderModelLocation, 1, GL_FALSE, &model[0][0]);
+	//glUniformMatrix4fv(cardShaderModelLocation, 1, GL_FALSE, &model[0][0]);
 	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	//glDrawArrays(GL_TRIANGLES, 0, 6);
+	testCard.draw(cardShaderModelLocation);
 
 	glfwSwapBuffers(window);
+}
+
+void Engine::deltaTimeStart() {
+	frameStart = getTimeMillis();
+}
+
+void Engine::deltaTimeEnd() {
+	u64 cycleTime = getTimeMillis() - frameStart;
+	if (cycleTime < 5) {
+		u64 delayTime = 5 - cycleTime;
+		std::this_thread::sleep_for(std::chrono::milliseconds(delayTime));
+	}
+	u64 endTime = getTimeMillis() - frameStart;
+	deltaTime = (double)endTime / 1000.0;
+	//printf("DeltaTime: %llu, %llf\n", endTime, deltaTime);
 }

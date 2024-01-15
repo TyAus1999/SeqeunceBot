@@ -17,9 +17,11 @@ int main() {
 		return -1;
 	}
 	while (e.windowLogic()) {
+		e.deltaTimeStart();
 		e.inputs();
 		e.gameLogic();
 		e.render();
+		e.deltaTimeEnd();
 	}
 	return 0;
 	//openglTest();
