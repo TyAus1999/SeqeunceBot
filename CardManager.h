@@ -6,6 +6,11 @@ struct cardDrawVertexData {
 	glm::vec3 location;
 };
 
+/*
+Want to impliment frame buffer picking on the cards so that I know which card that I have selected and what not
+Will be useful for the board as well to determine where the player has selected to go
+*/
+
 class CardManager {
 	u32 vao;
 	u32 vbo;
