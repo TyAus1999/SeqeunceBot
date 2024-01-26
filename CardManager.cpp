@@ -63,19 +63,19 @@ void CardManager::initVertexData() {
 	glBindBuffer(GL_ARRAY_BUFFER, decalVBO);
 	glm::vec2 suitCoords[4];
 	glm::vec2 faceCoords[4];
-	if (!cardGetTexCoord(Card(Diamonds, Ace), faceCoords, suitCoords)) {
+	if (!cardGetTexCoord(Card(Diamonds, 9), faceCoords, suitCoords)) {
 		printf("Could not get texture coords!\n");
 	}
 	DecalDraw decalGPU[6];
 	//Top Left
 	decalGPU[0].vertexLocation = glm::vec3(-1, 1, 0);
-	decalGPU[0].textureCoord = suitCoords[0];
+	decalGPU[0].textureCoord = faceCoords[0];
 	//Bottom Left
 	decalGPU[1].vertexLocation = glm::vec3(-1, -1, 0);
-	decalGPU[1].textureCoord = suitCoords[1];
+	decalGPU[1].textureCoord = faceCoords[1];
 	//Top Right
 	decalGPU[2].vertexLocation = glm::vec3(1, 1, 0);
-	decalGPU[2].textureCoord = suitCoords[3];
+	decalGPU[2].textureCoord = faceCoords[3];
 
 	//Top Right
 	decalGPU[3].vertexLocation = glm::vec3(1, 1, 0);
@@ -85,7 +85,7 @@ void CardManager::initVertexData() {
 	decalGPU[4].textureCoord = decalGPU[1].textureCoord;
 	//Bottom Right
 	decalGPU[5].vertexLocation = glm::vec3(1, -1, 0);
-	decalGPU[5].textureCoord = suitCoords[2];
+	decalGPU[5].textureCoord = faceCoords[2];
 
 	for (int i = 0; i < 6; i++)
 		decalGPU[i].vertexLocation *= 10;

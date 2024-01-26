@@ -57,6 +57,62 @@ static bool cardGetTexCoord(Card c, glm::vec2* faceCoords, glm::vec2* suitCoords
 		suitCoords[3] = glm::vec2(0.0255208333333333, 0.9722222222222222);
 		break;
 	}
+	switch (c.face) {
+	case Ace:
+		faceCoords[0] = glm::vec2(0.0307291666666667, 0.9777777777777778);
+		faceCoords[1] = glm::vec2(0.0307291666666667, 0.9333333333333333);
+		faceCoords[2] = glm::vec2(0.0567708333333333, 0.9333333333333333);
+		faceCoords[3] = glm::vec2(0.0567708333333333, 0.9777777777777778);
+		break;
+	case 2:
+		faceCoords[0] = glm::vec2(0.03125, 0.9046296296296296);
+		faceCoords[1] = glm::vec2(0.03125, 0.8601851851851852);
+		faceCoords[2] = glm::vec2(0.0479166666666667, 0.8601851851851852);
+		faceCoords[3] = glm::vec2(0.0479166666666667, 0.9046296296296296);
+		break;
+	case 3:
+		faceCoords[0] = glm::vec2(0.0322916666666667, 0.8314814814814815);
+		faceCoords[1] = glm::vec2(0.0322916666666667, 0.7851851851851852);
+		faceCoords[2] = glm::vec2(0.046875, 0.7851851851851852);
+		faceCoords[3] = glm::vec2(0.046875, 0.8314814814814815);
+		break;
+	case 4:
+		faceCoords[0] = glm::vec2(0.03125, 0.7583333333333333);
+		faceCoords[1] = glm::vec2(0.03125, 0.712962962962963);
+		faceCoords[2] = glm::vec2(0.0484375, 0.712962962962963);
+		faceCoords[3] = glm::vec2(0.0484375, 0.7583333333333333);
+		break;
+	case 5:
+		faceCoords[0] = glm::vec2(0.0322916666666667, 0.6842592592592593);
+		faceCoords[1] = glm::vec2(0.0322916666666667, 0.6388888888888889);
+		faceCoords[2] = glm::vec2(0.046875, 0.6388888888888889);
+		faceCoords[3] = glm::vec2(0.046875, 0.6842592592592593);
+		break;
+	case 6:
+		faceCoords[0] = glm::vec2(0.0322916666666667, 0.612037037037037);
+		faceCoords[1] = glm::vec2(0.0322916666666667, 0.5657407407407407);
+		faceCoords[2] = glm::vec2(0.0479166666666667, 0.5657407407407407);
+		faceCoords[3] = glm::vec2(0.0479166666666667, 0.612037037037037);
+		break;
+	case 7:
+		faceCoords[0] = glm::vec2(0.0322916666666667, 0.537962962962963);
+		faceCoords[1] = glm::vec2(0.0322916666666667, 0.4925925925925926);
+		faceCoords[2] = glm::vec2(0.0479166666666667, 0.4925925925925926);
+		faceCoords[3] = glm::vec2(0.0479166666666667, 0.537962962962963);
+		break;
+	case 8:
+		faceCoords[0] = glm::vec2(0.0328125, 0.4657407407407407);
+		faceCoords[1] = glm::vec2(0.0328125, 0.4194444444444444);
+		faceCoords[2] = glm::vec2(0.0473958333333333, 0.4194444444444444);
+		faceCoords[3] = glm::vec2(0.0473958333333333, 0.4657407407407407);
+		break;
+	case 9:
+		faceCoords[0] = glm::vec2(0.0322916666666667, 0.3925925925925926);
+		faceCoords[1] = glm::vec2(0.0322916666666667, 0.3462962962962963);
+		faceCoords[2] = glm::vec2(0.0479166666666667, 0.3462962962962963);
+		faceCoords[3] = glm::vec2(0.0479166666666667, 0.3925925925925926);
+		break;
+	}
 	return true;
 }
 
