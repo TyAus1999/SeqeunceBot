@@ -2,21 +2,11 @@
 #include "CommonInc.h"
 #include "Shader.h"
 #include "Camera.h"
-#include "Drawable.h"
-
-struct cardDrawVertex {
-	glm::vec3 location;
-};
+#include "DrawableCard.h"
+#include "CardManager.h"
 
 class Engine {
 	GLFWwindow* window;
-	u32 cardShaderProjectionLocation;
-	u32 cardShaderViewLocation;
-	u32 cardShaderModelLocation;
-	u32 cardShaderCurrentTimeLocation;
-	Shader cardShader;
-	u32 vao;
-	u32 vbo;
 	u64 engineStartTime;
 	u64 currentTime;
 	u64 deltaTime;
@@ -25,7 +15,7 @@ class Engine {
 	void initShaders();
 	void initVertexData();
 
-	Drawable testCard;
+	CardManager cardManager;
 public:
 	Engine();
 	~Engine();

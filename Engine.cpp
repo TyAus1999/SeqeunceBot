@@ -1,40 +1,11 @@
 #include "Engine.h"
 
 void Engine::initShaders() {
-	std::string workingPath = std::filesystem::current_path().string();
-	std::string vShader = workingPath + "\\Shaders\\CardVertexShader.glsl";
-	std::string fShader = workingPath + "\\Shaders\\CardFragmentShader.glsl";
-	cardShader = Shader(vShader.c_str(), fShader.c_str());
-	cardShaderProjectionLocation = glGetUniformLocation(cardShader.shaderProgram, "projection");
-	cardShaderViewLocation = glGetUniformLocation(cardShader.shaderProgram, "view");
-	cardShaderModelLocation = glGetUniformLocation(cardShader.shaderProgram, "model");
-	cardShaderCurrentTimeLocation = glGetUniformLocation(cardShader.shaderProgram, "currentTime");
+	cardManager.initShaders();
 }
 
 void Engine::initVertexData() {
-	glGenBuffers(1, &vbo);
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	cardDrawVertex toGPU[6];
-	//toGPU[0].location = glm::vec3(-0.25, 0.5, 0);
-	//toGPU[1].location = glm::vec3(0.25, 0.5, 0);
-	//toGPU[2].location = glm::vec3(-0.25, -0.5, 0);
-	//toGPU[3] = toGPU[2];
-	//toGPU[4] = toGPU[1];
-	//toGPU[5].location = glm::vec3(-0.25, -0.5, 0);
-	toGPU[0].location = glm::vec3(-0.25, 0.5, 0);
-	toGPU[1].location = glm::vec3(-0.25, -0.5, 0);
-	toGPU[2].location = glm::vec3(0.25, -0.5, 0);
-
-	toGPU[3].location = glm::vec3(0.25, -0.5, 0);
-	toGPU[4].location = glm::vec3(0.25, 0.5, 0);
-	toGPU[5].location = glm::vec3(-0.25, 0.5, 0);
-	for (int i = 0; i < 6; i++)
-		toGPU[i].location *= 10;
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cardDrawVertex) * 6, toGPU, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(cardDrawVertex), (void*)0);
-	glEnableVertexAttribArray(0);
+	cardManager.initVertexData();
 }
 
 Engine::Engine() {
@@ -83,16 +54,12 @@ bool Engine::init() {
 	initShaders();
 	initVertexData();
 
-	playerCam = new Camera(glm::vec3(0, 0, 100), glm::vec3(0), 100);
+	playerCam = new Camera(glm::vec3(0, 0, 50), glm::vec3(0));
 	playerCam->onFrameStart(800.f / 800.f);
-	playerCam->lookAt(glm::vec3(0));
 	projection = playerCam->getProjection();
 
 	engineStartTime = getCurrentMillis();
 	printf("Init time: %llums\n", getCurrentMillis() - startTime);
-
-	testCard = Drawable(DrawableTypeCard);
-	testCard.moveTo(glm::vec3(10, 0, 0), 0);
 
 	return true;
 }
@@ -112,7 +79,7 @@ bool Engine::windowLogic() {
 }
 
 void Engine::gameLogic() {
-	testCard.tick(currentTime, deltaTime);
+	cardManager.tick(currentTime, deltaTime);
 }
 
 void Engine::render() {
@@ -124,13 +91,13 @@ void Engine::render() {
 	float* v = &view[0][0];
 	/*glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0, 0, 0));*/
-	cardShader.use();
-	glUniformMatrix4fv(cardShaderProjectionLocation, 1, GL_FALSE, p);
-	glUniformMatrix4fv(cardShaderViewLocation, 1, GL_FALSE, v);
-	//glUniformMatrix4fv(cardShaderModelLocation, 1, GL_FALSE, &model[0][0]);
-	glBindVertexArray(vao);
-	//glDrawArrays(GL_TRIANGLES, 0, 6);
-	testCard.draw(cardShaderModelLocation, currentTime);
+	//cardShader.use();
+	//glUniformMatrix4fv(cardShaderProjectionLocation, 1, GL_FALSE, p);
+	//glUniformMatrix4fv(cardShaderViewLocation, 1, GL_FALSE, v);
+	////glUniformMatrix4fv(cardShaderModelLocation, 1, GL_FALSE, &model[0][0]);
+	//glBindVertexArray(vao);
+	////glDrawArrays(GL_TRIANGLES, 0, 6);
+	cardManager.draw(p, v);
 
 	glfwSwapBuffers(window);
 }
@@ -141,9 +108,9 @@ void Engine::deltaTimeStart() {
 
 void Engine::deltaTimeEnd() {
 	u64 cycleTime = getTimeMillis() - currentTime;
-	if (cycleTime < 4) {
-		u64 delayTime = 4 - cycleTime;
-		//std::this_thread::sleep_for(std::chrono::milliseconds(delayTime));
+	if (cycleTime < 6) {
+		u64 delayTime = 6 - cycleTime;
+		std::this_thread::sleep_for(std::chrono::milliseconds(delayTime));
 	}
 	deltaTime = getTimeMillis() - currentTime;
 	//printf("DeltaTime: %llu\n", deltaTime);
