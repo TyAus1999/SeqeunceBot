@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Drawn">
+      <UniqueIdentifier>{c785b475-48fe-4624-81f6-21a073e9f956}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Drawn">
+      <UniqueIdentifier>{724e9b4f-0cb0-41d9-afb9-1d28ba53b1b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SeqeunceBot.cpp">
@@ -49,7 +55,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CardManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Drawn</Filter>
+    </ClCompile>
+    <ClCompile Include="ChipManager.cpp">
+      <Filter>Source Files\Drawn</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -87,7 +96,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CardManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Drawn</Filter>
+    </ClInclude>
+    <ClInclude Include="ChipManager.h">
+      <Filter>Header Files\Drawn</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

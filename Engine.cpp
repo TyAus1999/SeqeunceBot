@@ -2,10 +2,12 @@
 
 void Engine::initShaders() {
 	cardManager.initShaders();
+	chipManager.initShaders();
 }
 
 void Engine::initVertexData() {
 	cardManager.initVertexData();
+	chipManager.initVertexData();
 }
 
 Engine::Engine() {
@@ -80,6 +82,7 @@ bool Engine::windowLogic() {
 
 void Engine::gameLogic() {
 	cardManager.tick(currentTime, deltaTime);
+	chipManager.tick(currentTime, deltaTime);
 }
 
 void Engine::render() {
@@ -98,6 +101,7 @@ void Engine::render() {
 	//glBindVertexArray(vao);
 	////glDrawArrays(GL_TRIANGLES, 0, 6);
 	cardManager.draw(p, v);
+	chipManager.draw(p, v);
 
 	glfwSwapBuffers(window);
 }

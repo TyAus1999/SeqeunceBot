@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "DrawableCard.h"
 #include "CardManager.h"
+#include "ChipManager.h"
 
 class Engine {
 	GLFWwindow* window;
@@ -16,6 +17,7 @@ class Engine {
 	void initVertexData();
 
 	CardManager cardManager;
+	ChipManager chipManager;
 public:
 	Engine();
 	~Engine();
