@@ -60,6 +60,9 @@
     <ClCompile Include="ChipManager.cpp">
       <Filter>Source Files\Drawn</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Card.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="ChipManager.h">
       <Filter>Header Files\Drawn</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

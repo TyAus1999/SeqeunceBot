@@ -5,7 +5,14 @@ CardManager::CardManager() {
 }
 
 CardManager::~CardManager() {
-
+	u32 vaos[2];
+	vaos[0] = cardVAO;
+	vaos[1] = decalVAO;
+	glDeleteVertexArrays(2, vaos);
+	u32 vbos[2];
+	vbos[0] = cardVBO;
+	vbos[1] = decalVBO;
+	glDeleteBuffers(2, vbos);
 }
 
 void CardManager::initShaders() {
@@ -13,17 +20,29 @@ void CardManager::initShaders() {
 	std::string vShader = workingPath + "\\Shaders\\CardVertexShader.glsl";
 	std::string fShader = workingPath + "\\Shaders\\CardFragmentShader.glsl";
 	cardShader = Shader(vShader.c_str(), fShader.c_str());
-	projectionLocation = glGetUniformLocation(cardShader.shaderProgram, "projection");
-	viewLocation = glGetUniformLocation(cardShader.shaderProgram, "view");
-	modelLocation = glGetUniformLocation(cardShader.shaderProgram, "model");
+	cardProjectionLocation = glGetUniformLocation(cardShader.shaderProgram, "projection");
+	cardViewLocation = glGetUniformLocation(cardShader.shaderProgram, "view");
+	cardModelLocation = glGetUniformLocation(cardShader.shaderProgram, "model");
 	//cardShaderCurrentTimeLocation = glGetUniformLocation(cardShader.shaderProgram, "currentTime");
+
+	vShader = workingPath + "\\Shaders\\DecalVertexShader.glsl";
+	fShader = workingPath + "\\Shaders\\DecalFragmentShader.glsl";
+	decalShader = Shader(vShader.c_str(), fShader.c_str());
+	decalProjectionLocation = glGetUniformLocation(decalShader.shaderProgram, "projection");
+	decalViewLocation = glGetUniformLocation(decalShader.shaderProgram, "view");
+	decalModelLocation = glGetUniformLocation(decalShader.shaderProgram, "model");
+
+	//Texture
+	std::string texPath = workingPath + "\\ImageEdits\\Texture.png";
+	decalTexture.init(texPath.c_str());
 }
 
 void CardManager::initVertexData() {
-	glGenBuffers(1, &vbo);
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	//Card
+	glGenBuffers(1, &cardVBO);
+	glGenVertexArrays(1, &cardVAO);
+	glBindVertexArray(cardVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, cardVBO);
 	cardDrawVertexData toGPU[6];
 	toGPU[0].location = glm::vec3(-3, 6, 0);
 	toGPU[1].location = glm::vec3(-3, -6, 0);
@@ -35,6 +54,42 @@ void CardManager::initVertexData() {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cardDrawVertexData) * 6, toGPU, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(cardDrawVertexData), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	//Card Decals
+	//Like for the suit and face
+	glGenBuffers(1, &decalVBO);
+	glGenVertexArrays(1, &decalVAO);
+	glBindVertexArray(decalVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, decalVBO);
+	DecalDraw decalGPU[6];
+	//Top Left
+	decalGPU[0].vertexLocation = glm::vec3(-1, 1, 0);
+	decalGPU[0].textureCoord = glm::vec2(0.0083333333333333, 0.7527777777777778);
+	//Bottom Left
+	decalGPU[1].vertexLocation = glm::vec3(-1, -1, 0);
+	decalGPU[1].textureCoord = glm::vec2(0.0083333333333333, 0.7138888888888889);
+	//Top Right
+	decalGPU[2].vertexLocation = glm::vec3(1, 1, 0);
+	decalGPU[2].textureCoord = glm::vec2(0.0255208333333333, 0.7527777777777778);
+
+	//Top Right
+	decalGPU[3].vertexLocation = glm::vec3(1, 1, 0);
+	decalGPU[3].textureCoord = decalGPU[2].textureCoord;
+	//Bottom Left
+	decalGPU[4].vertexLocation = glm::vec3(-1, -1, 0);
+	decalGPU[4].textureCoord = decalGPU[1].textureCoord;
+	//Bottom Right
+	decalGPU[5].vertexLocation = glm::vec3(1, -1, 0);
+	decalGPU[5].textureCoord = glm::vec2(0.0255208333333333, 0.7138888888888889);
+
+	for (int i = 0; i < 6; i++)
+		decalGPU[i].vertexLocation *= 10;
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(DecalDraw) * 6, decalGPU, GL_DYNAMIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(DecalDraw), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(DecalDraw), (void*)sizeof(glm::vec3));
+	glEnableVertexAttribArray(1);
 }
 
 void CardManager::tick(u64 currentTime, u64 deltaTime) {
@@ -42,12 +97,22 @@ void CardManager::tick(u64 currentTime, u64 deltaTime) {
 }
 
 void CardManager::draw(float* projection, float* view) {
+	decalShader.use();
+	decalTexture.use(0);
+	glUniformMatrix4fv(decalProjectionLocation, 1, GL_FALSE, projection);
+	glUniformMatrix4fv(decalViewLocation, 1, GL_FALSE, view);
+	glm::mat4 decalModel = glm::mat4(1);
+	decalModel = glm::translate(decalModel, glm::vec3(0, 0, 0));
+	glUniformMatrix4fv(decalModelLocation, 1, GL_FALSE, &decalModel[0][0]);
+	glBindVertexArray(decalVAO);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
 	cardShader.use();
-	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, projection);
-	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, view);
+	glUniformMatrix4fv(cardProjectionLocation, 1, GL_FALSE, projection);
+	glUniformMatrix4fv(cardViewLocation, 1, GL_FALSE, view);
 	glm::mat4 model = glm::mat4(1);
 	model = glm::translate(model, glm::vec3(0));
-	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &model[0][0]);
-	glBindVertexArray(vao);
+	glUniformMatrix4fv(cardModelLocation, 1, GL_FALSE, &model[0][0]);
+	glBindVertexArray(cardVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }

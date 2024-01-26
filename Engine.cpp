@@ -67,10 +67,23 @@ bool Engine::init() {
 }
 
 void Engine::inputs() {
+	static bool shouldSpawn = false;
 	int leftMouse = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-	if (leftMouse == GLFW_PRESS) {
+	if (leftMouse == GLFW_PRESS && shouldSpawn == false) {
 		//printf("MouseDown\n");
 		//testCard.addMovement(glm::vec3(0.001, 0, 0), deltaTime);
+		shouldSpawn = true;
+		u64 c = chipManager.addChip(glm::vec3(0, 0.5, 0.5));
+		int rX, rY;
+		rX = rand() % 100;
+		rX -= 50;
+		rY = rand() % 100;
+		rY -= 50;
+		chipManager.moveChip(c, glm::vec3(rX, rY, 0), currentTime);
+		printf("Chips: %llu\n", c);
+	}
+	else if (leftMouse == GLFW_RELEASE) {
+		shouldSpawn = false;
 	}
 }
 
@@ -100,9 +113,9 @@ void Engine::render() {
 	////glUniformMatrix4fv(cardShaderModelLocation, 1, GL_FALSE, &model[0][0]);
 	//glBindVertexArray(vao);
 	////glDrawArrays(GL_TRIANGLES, 0, 6);
-	chipManager.draw(p, v);
+	chipManager.draw(p, v, currentTime);
 	cardManager.draw(p, v);
-	
+
 
 	glfwSwapBuffers(window);
 }
