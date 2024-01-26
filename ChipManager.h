@@ -12,7 +12,6 @@ class ChipManager {
 	u32 projectionLocation;
 	u32 viewLocation;
 	u32 modelLocation;
-	u32 centreLocation;
 	Shader chipShader;
 public:
 	ChipManager();

@@ -100,8 +100,9 @@ void Engine::render() {
 	////glUniformMatrix4fv(cardShaderModelLocation, 1, GL_FALSE, &model[0][0]);
 	//glBindVertexArray(vao);
 	////glDrawArrays(GL_TRIANGLES, 0, 6);
-	cardManager.draw(p, v);
 	chipManager.draw(p, v);
+	cardManager.draw(p, v);
+	
 
 	glfwSwapBuffers(window);
 }

@@ -25,13 +25,13 @@ void CardManager::initVertexData() {
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	cardDrawVertexData toGPU[6];
-	toGPU[0].location = glm::vec3(-3, 5, 0);
-	toGPU[1].location = glm::vec3(-3, -5, 0);
-	toGPU[2].location = glm::vec3(3, -5, 0);
+	toGPU[0].location = glm::vec3(-3, 6, 0);
+	toGPU[1].location = glm::vec3(-3, -6, 0);
+	toGPU[2].location = glm::vec3(3, -6, 0);
 
-	toGPU[3].location = glm::vec3(3, -5, 0);
-	toGPU[4].location = glm::vec3(3, 5, 0);
-	toGPU[5].location = glm::vec3(-3, 5, 0);
+	toGPU[3].location = glm::vec3(3, -6, 0);
+	toGPU[4].location = glm::vec3(3, 6, 0);
+	toGPU[5].location = glm::vec3(-3, 6, 0);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cardDrawVertexData) * 6, toGPU, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(cardDrawVertexData), (void*)0);
 	glEnableVertexAttribArray(0);
