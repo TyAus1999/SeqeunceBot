@@ -24,6 +24,42 @@ struct CardDraw {
 	glm::vec2 texCoordSize;
 };
 
+//faceCoords is an array of 4 vec2's that will be the corresponding face texture coords in the texture png
+//suitCoords is an array of 4 vec2's that will be the corresponding suit texture coords
+//Will return false if the card is invalid
+//Coords are defined top left, bottom left, bottom right, top right
+static bool cardGetTexCoord(Card c, glm::vec2* faceCoords, glm::vec2* suitCoords) {
+	if (!c.isValid())
+		return false;
+	switch (c.suit) {
+	case Spades:
+		suitCoords[0] = glm::vec2(0.0083333333333333, 0.7527777777777778);
+		suitCoords[1] = glm::vec2(0.0083333333333333, 0.7138888888888889);
+		suitCoords[2] = glm::vec2(0.0265625, 0.7138888888888889);
+		suitCoords[3] = glm::vec2(0.0265625, 0.7527777777777778);
+		break;
+	case Hearts:
+		suitCoords[0] = glm::vec2(0.0083333333333333, 0.825);
+		suitCoords[1] = glm::vec2(0.0083333333333333, 0.78518518518518518518518518518519);
+		suitCoords[2] = glm::vec2(0.02864583333333333333333333333333, 0.78518518518518518518518518518519);
+		suitCoords[3] = glm::vec2(0.02864583333333333333333333333333, 0.825);
+		break;
+	case Clubs:
+		suitCoords[0] = glm::vec2(0.0083333333333333, 0.8990740740740741);
+		suitCoords[1] = glm::vec2(0.0083333333333333, 0.8601851851851852);
+		suitCoords[2] = glm::vec2(0.0307291666666667, 0.8601851851851852);
+		suitCoords[3] = glm::vec2(0.0307291666666667, 0.8990740740740741);
+		break;
+	case Diamonds:
+		suitCoords[0] = glm::vec2(0.0083333333333333, 0.9722222222222222);
+		suitCoords[1] = glm::vec2(0.0083333333333333, 0.9324074074074074);
+		suitCoords[2] = glm::vec2(0.0255208333333333, 0.9324074074074074);
+		suitCoords[3] = glm::vec2(0.0255208333333333, 0.9722222222222222);
+		break;
+	}
+	return true;
+}
+
 class CardManager {
 	u32 cardVAO;
 	u32 cardVBO;

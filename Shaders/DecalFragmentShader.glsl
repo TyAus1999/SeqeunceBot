@@ -7,7 +7,7 @@ in vec2 fragTextureCoord;
 
 void main(){
     vec4 texColour=texture(tex, fragTextureCoord);
-    if(texColour.a<0.1)
+    if(texColour.a<0.05)
         discard;
     FragColour=texColour;
 }
