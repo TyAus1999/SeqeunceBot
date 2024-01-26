@@ -83,9 +83,8 @@ bool Engine::init() {
 	initShaders();
 	initVertexData();
 
-	playerCam = new Camera(glm::vec3(0, 0, 1), glm::vec3(0), 100);
+	playerCam = new Camera(glm::vec3(0, 0, 100), glm::vec3(0), 100);
 	playerCam->onFrameStart(800.f / 800.f);
-	playerCam->setLocation(glm::vec3(0, 0, 100));
 	playerCam->lookAt(glm::vec3(0));
 	projection = playerCam->getProjection();
 
@@ -93,6 +92,7 @@ bool Engine::init() {
 	printf("Init time: %llums\n", getCurrentMillis() - startTime);
 
 	testCard = Drawable(DrawableTypeCard);
+	testCard.moveTo(glm::vec3(10, 0, 0), 0);
 
 	return true;
 }
@@ -112,19 +112,7 @@ bool Engine::windowLogic() {
 }
 
 void Engine::gameLogic() {
-	static bool dir = true;
-	glm::vec3 loc = testCard.getLocation();
-	if (dir) {
-		testCard.addMovement(glm::vec3(0.1, 0, 0), deltaTime);
-		if (loc.x > 5)
-			dir = false;
-	}
-	else {
-		testCard.addMovement(glm::vec3(-0.1, 0, 0), deltaTime);
-		if (loc.x < -5)
-			dir = true;
-	}
-	//printVec3(testCard.getLocation());
+	testCard.tick(currentTime, deltaTime);
 }
 
 void Engine::render() {
@@ -142,22 +130,21 @@ void Engine::render() {
 	//glUniformMatrix4fv(cardShaderModelLocation, 1, GL_FALSE, &model[0][0]);
 	glBindVertexArray(vao);
 	//glDrawArrays(GL_TRIANGLES, 0, 6);
-	testCard.draw(cardShaderModelLocation);
+	testCard.draw(cardShaderModelLocation, currentTime);
 
 	glfwSwapBuffers(window);
 }
 
 void Engine::deltaTimeStart() {
-	frameStart = getTimeMillis();
+	currentTime = getTimeMillis();
 }
 
 void Engine::deltaTimeEnd() {
-	u64 cycleTime = getTimeMillis() - frameStart;
-	if (cycleTime < 5) {
-		u64 delayTime = 5 - cycleTime;
-		std::this_thread::sleep_for(std::chrono::milliseconds(delayTime));
+	u64 cycleTime = getTimeMillis() - currentTime;
+	if (cycleTime < 4) {
+		u64 delayTime = 4 - cycleTime;
+		//std::this_thread::sleep_for(std::chrono::milliseconds(delayTime));
 	}
-	u64 endTime = getTimeMillis() - frameStart;
-	deltaTime = (double)endTime / 1000.0;
-	//printf("DeltaTime: %llu, %llf\n", endTime, deltaTime);
+	deltaTime = getTimeMillis() - currentTime;
+	//printf("DeltaTime: %llu\n", deltaTime);
 }

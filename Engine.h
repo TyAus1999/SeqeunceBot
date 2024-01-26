@@ -18,8 +18,8 @@ class Engine {
 	u32 vao;
 	u32 vbo;
 	u64 engineStartTime;
-	u64 frameStart;
-	double deltaTime;
+	u64 currentTime;
+	u64 deltaTime;
 	Camera* playerCam;
 	glm::mat4 projection;
 	void initShaders();

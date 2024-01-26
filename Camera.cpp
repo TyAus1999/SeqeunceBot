@@ -110,6 +110,7 @@ void Camera::setLocation(glm::vec3 location) {
 
 void Camera::onFrameStart(float ratio) {
 	projection = glm::perspective(glm::radians(fov), ratio, near, far);
+	//projection = glm::ortho(glm::radians(fov), ratio, near, far);
 }
 
 //Gets the ray from the camera towards the mouse in 3d space

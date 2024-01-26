@@ -9,11 +9,17 @@ enum DrawableType {
 class Drawable {
 	u32 drawType;
 	glm::mat4 model;
-	glm::vec3 location;
+	glm::vec3 startPos;
+	glm::vec3 destination;
+	glm::vec3 directionNormalized;
+	u64 assignmentTime;
+	u64 arrivalTime;
+	double movementSpeed;
+	bool isMoving(u64 currentTime, glm::vec3* currentLocation);
 public:
 	Drawable(u32 drawType=DrawableTypeLast);
-	void translate(glm::vec3 location);
-	void addMovement(glm::vec3 velocities, double deltaTime);
-	glm::vec3 getLocation();
-	void draw(u32 modelLocation);
+	void tick(u64 currentTime, u64 deltaTime);
+	void moveTo(glm::vec3 location, u64 currentTime);
+	glm::vec3 getLocation(u64 currentTime);
+	void draw(u32 modelLocation, u64 currentTime);
 };
