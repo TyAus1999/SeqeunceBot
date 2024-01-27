@@ -138,7 +138,7 @@ void CardManager::draw(float* projection, float* view, u64 currentTime) {
 	glm::mat4* cardModels = new glm::mat4[amountCards];
 	glm::vec3 topLeftSuitOffset(-5,0,0);
 	glm::vec3 topLeftFaceOffset(5,0,0);
-	for (int i = 0; i < amountCards; i++) {
+	for (int i = 0; i < amountCards; i++) {//I probably have to figure out a new way to render the suits and faces, this way is kinda stupid
 		cardModels[i] = glm::mat4(1);
 		glm::vec3 cardLoc = cardDraws[i].moveComponent.getLocation(currentTime);
 		cardModels[i] = glm::translate(cardModels[i], cardLoc);
