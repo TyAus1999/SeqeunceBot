@@ -20,8 +20,6 @@ Will be useful for the board as well to determine where the player has selected 
 struct CardDraw {
 	MoveComponent moveComponent;
 	Card c;
-	glm::vec2 texCoordTopLeft;
-	glm::vec2 texCoordSize;
 };
 
 //faceCoords is an array of 4 vec2's that will be the corresponding face texture coords in the texture png
@@ -112,9 +110,28 @@ static bool cardGetTexCoord(Card c, glm::vec2* faceCoords, glm::vec2* suitCoords
 		faceCoords[2] = glm::vec2(0.0479166666666667, 0.3462962962962963);
 		faceCoords[3] = glm::vec2(0.0479166666666667, 0.3925925925925926);
 		break;
+	case Jack:
+		faceCoords[0] = glm::vec2(0.03125, 0.3185185185185185);
+		faceCoords[1] = glm::vec2(0.03125, 0.2731481481481481);
+		faceCoords[2] = glm::vec2(0.0453125, 0.2731481481481481);
+		faceCoords[3] = glm::vec2(0.0453125, 0.3185185185185185);
+		break;
+	case Queen:
+		faceCoords[0] = glm::vec2(0.0317708333333333, 0.2462962962962963);
+		faceCoords[1] = glm::vec2(0.0317708333333333, 0.187962962962963);
+		faceCoords[2] = glm::vec2(0.05625, 0.187962962962963);
+		faceCoords[3] = glm::vec2(0.05625, 0.2462962962962963);
+		break;
+	case King:
+		faceCoords[0] = glm::vec2(0.03125, 0.1722222222222222);
+		faceCoords[1] = glm::vec2(0.03125, 0.1277777777777778);
+		faceCoords[2] = glm::vec2(0.0578125, 0.1277777777777778);
+		faceCoords[3] = glm::vec2(0.0578125, 0.1722222222222222);
+		break;
 	}
 	return true;
 }
+
 
 class CardManager {
 	u32 cardVAO;
@@ -130,11 +147,20 @@ class CardManager {
 	u32 decalModelLocation;
 	Shader decalShader;
 	Texture decalTexture;
+
+	std::vector<CardDraw> cardDraws;
+
+	void changeCardTextureCoordsSuit(int suit);
+	void changeCardTextureCoordsFace(int face);
 public:
 	CardManager();
 	~CardManager();
 	void initShaders();
 	void initVertexData();
 	void tick(u64 currentTime, u64 deltaTime);
-	void draw(float* projection, float* view);
+	void draw(float* projection, float* view, u64 currentTime);
+
+	u64 addCard(Card c, double speed = 20);
+	bool moveCard(u64 index, glm::vec3 destination, u64 currentTime);
+	void removeAllCards();
 };

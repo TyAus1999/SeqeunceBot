@@ -60,6 +60,8 @@ bool Engine::init() {
 	playerCam->onFrameStart(800.f / 800.f);
 	projection = playerCam->getProjection();
 
+	u64 c = cardManager.addCard(Card(Spades, Queen));
+
 	engineStartTime = getCurrentMillis();
 	printf("Init time: %llums\n", getCurrentMillis() - startTime);
 
@@ -80,7 +82,7 @@ void Engine::inputs() {
 		rY = rand() % 100;
 		rY -= 50;
 		chipManager.moveChip(c, glm::vec3(rX, rY, 0), currentTime);
-		printf("Chips: %llu\n", c);
+		//printf("Chips: %llu\n", c);
 	}
 	else if (leftMouse == GLFW_RELEASE) {
 		shouldSpawn = false;
@@ -114,7 +116,7 @@ void Engine::render() {
 	//glBindVertexArray(vao);
 	////glDrawArrays(GL_TRIANGLES, 0, 6);
 	chipManager.draw(p, v, currentTime);
-	cardManager.draw(p, v);
+	cardManager.draw(p, v, currentTime);
 
 
 	glfwSwapBuffers(window);
