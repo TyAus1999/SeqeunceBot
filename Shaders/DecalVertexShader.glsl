@@ -8,7 +8,7 @@ layout(location=7) in int isRedSuit;
 flat out vec2 geoTopLeftTexture;
 flat out vec2 geoTextureSize;
 flat out mat4 geoProjection;
-flat out int fragIsRedSuit;
+flat out int geoIsRedSuit;
 
 uniform mat4 projection;
 uniform mat4 view;
@@ -17,5 +17,6 @@ void main(){
     geoTopLeftTexture=textureCoordTopLeft;
     geoTextureSize=textureCoordSize;
     geoProjection=projection*view*model;
+    geoIsRedSuit=isRedSuit;
     gl_Position=vec4(decalOffset,1);
 }
