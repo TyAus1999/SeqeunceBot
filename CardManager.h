@@ -8,8 +8,12 @@ struct cardDrawVertexData {
 };
 
 struct DecalDraw {
-	glm::vec3 vertexLocation;
-	glm::vec2 textureCoord;
+	//Offset of where the decal is based on the card
+	glm::vec3 decalOffset;
+	glm::vec2 textureTopLeft;
+	glm::vec2 textureSize;
+	//Card model
+	glm::mat4 model;
 };
 
 /*
@@ -144,7 +148,6 @@ class CardManager {
 	u32 decalVBO;
 	u32 decalProjectionLocation;
 	u32 decalViewLocation;
-	u32 decalModelLocation;
 	Shader decalShader;
 	Texture decalTexture;
 
