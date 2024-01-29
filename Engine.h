@@ -2,9 +2,9 @@
 #include "CommonInc.h"
 #include "Shader.h"
 #include "Camera.h"
-#include "DrawableCard.h"
 #include "CardManager.h"
 #include "ChipManager.h"
+#include "Game.h"
 
 class Engine {
 	GLFWwindow* window;
@@ -16,6 +16,7 @@ class Engine {
 	void initShaders();
 	void initVertexData();
 
+	Game game;
 	CardManager cardManager;
 	ChipManager chipManager;
 public:

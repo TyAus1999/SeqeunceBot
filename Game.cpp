@@ -5,10 +5,18 @@ Game::Game(int players, int teams) {
 }
 
 Game::~Game() {
-	if (players)
+	reset();
+}
+
+void Game::reset() {
+	if (players) {
 		delete[] players;
-	if (aiPlayers)
+		players = 0;
+	}
+	if (aiPlayers) {
 		delete[] aiPlayers;
+		aiPlayers = 0;
+	}
 }
 
 void Game::initPlayer(int player, int team, Card* hand, int amountInHand) {
@@ -21,6 +29,7 @@ void Game::initPlayer(int player, int team, Card* hand, int amountInHand) {
 }
 
 void Game::initGame(int players, int teams) {
+	reset();
 	amountTeams = teams;
 	amountPlayers = players;
 	this->players = new Player[amountPlayers];
@@ -55,6 +64,10 @@ void Game::initGame(int players, int teams) {
 	delete[] cards;
 	printf("Player 1 Hand\n");
 	this->players[1].printHand();
+}
+
+Board* Game::getBoardRender() {
+	return &b;
 }
 
 void Game::setPlayerAI(int player) {

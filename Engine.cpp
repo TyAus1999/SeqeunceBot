@@ -60,8 +60,23 @@ bool Engine::init() {
 	playerCam->onFrameStart(800.f / 800.f);
 	projection = playerCam->getProjection();
 
-	u64 c = cardManager.addCard(0, Card(Spades, Queen));
-	cardManager.moveCard(c, glm::vec3(-30, 0, 0),0);
+	Board* b = game.getBoardRender();
+	for (int x = 0; x < 10; x++) {
+		for (int y = 0; y < 10; y++) {
+			Place* p = b->getPlace(x, y);
+			if (!p)
+				continue;
+			if (p->isFree)
+				continue;
+			u64 time = x + y * 100;
+			u64 c = cardManager.addCard(0, p->card);
+			float destX, destY;
+			destX = -38 + (x * 8);
+			destY = -38 + (y * 8);
+			cardManager.moveCard(c, glm::vec3(destX, destY, 0), time);
+		}
+	}
+	b->drawBoard();
 
 	engineStartTime = getCurrentMillis();
 	printf("Init time: %llums\n", getCurrentMillis() - startTime);
@@ -76,13 +91,13 @@ void Engine::inputs() {
 		//printf("MouseDown\n");
 		//testCard.addMovement(glm::vec3(0.001, 0, 0), deltaTime);
 		shouldSpawn = true;
-		u64 c = cardManager.addCard(currentTime, Card(Hearts, 2));//chipManager.addChip(glm::vec3(0, 0.5, 0.5));
+		//u64 c = cardManager.addCard(currentTime, Card(Hearts, 2));//chipManager.addChip(glm::vec3(0, 0.5, 0.5));
 		int rX, rY;
 		rX = rand() % 100;
 		rX -= 50;
 		rY = rand() % 100;
 		rY -= 50;
-		cardManager.moveCard(c, glm::vec3(rX, rY, 0),currentTime);
+		//cardManager.moveCard(c, glm::vec3(rX, rY, 0),currentTime);
 		//chipManager.moveChip(c, glm::vec3(rX, rY, 0), currentTime);
 		//printf("Chips: %llu\n", c);
 	}

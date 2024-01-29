@@ -11,10 +11,12 @@ class Game {
 	bool* aiPlayers;
 	int currentPlayerTurn;
 public:
-	Game(int players = 4, int teams = 2);
+	Game(int players = 2, int teams = 2);
 	~Game();
+	void reset();
 	void initPlayer(int player, int team, Card* hand, int amountInHand);
 	void initGame(int players, int teams);
+	Board* getBoardRender();
 	void setPlayerAI(int player);
 	bool tick();//Returns true if game still good to go
 	void getHumanInput(int* x, int* y);
