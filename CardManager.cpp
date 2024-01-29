@@ -1,35 +1,5 @@
 #include "CardManager.h"
 
-void CardManager::changeCardTextureCoordsSuit(int suit) {
-	//glBindBuffer(GL_ARRAY_BUFFER, decalVBO);
-	//DecalDraw* decalData = (DecalDraw*)glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE);
-	//glm::vec2 faceCoords[4];
-	//glm::vec2 suitCoords[4];
-	//cardGetTexCoord(Card(suit, Ace), faceCoords, suitCoords);
-	//decalData[0].textureCoord = suitCoords[0];
-	//decalData[1].textureCoord = suitCoords[1];
-	//decalData[2].textureCoord = suitCoords[3];
-	//decalData[3].textureCoord = suitCoords[3];
-	//decalData[4].textureCoord = suitCoords[1];
-	//decalData[5].textureCoord = suitCoords[2];
-	//glUnmapBuffer(GL_ARRAY_BUFFER);
-}
-
-void CardManager::changeCardTextureCoordsFace(int face) {
-	//glBindBuffer(GL_ARRAY_BUFFER, decalVBO);
-	//DecalDraw* decalData = (DecalDraw*)glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE);
-	//glm::vec2 faceCoords[4];
-	//glm::vec2 suitCoords[4];
-	//cardGetTexCoord(Card(Spades, face), faceCoords, suitCoords);
-	//decalData[0].textureCoord = faceCoords[0];
-	//decalData[1].textureCoord = faceCoords[1];
-	//decalData[2].textureCoord = faceCoords[3];
-	//decalData[3].textureCoord = faceCoords[3];
-	//decalData[4].textureCoord = faceCoords[1];
-	//decalData[5].textureCoord = faceCoords[2];
-	//glUnmapBuffer(GL_ARRAY_BUFFER);
-}
-
 CardManager::CardManager() {
 
 }
@@ -95,10 +65,10 @@ void CardManager::initVertexData() {
 	glm::vec2 suitCoords[4];
 	glm::vec2 faceCoords[4];
 	cardGetTexCoord(Card(Diamonds, King), faceCoords, suitCoords);
-	decalGPU.decalOffset = glm::vec3(0);
+	decalGPU.decalOffset = glm::vec3(0, 5, 0);
 	decalGPU.textureTopLeft = faceCoords[0];
 	decalGPU.textureSize = faceCoords[2] - faceCoords[0];
-	decalGPU.model = glm::mat4(1);
+	decalGPU.model = glm::translate(glm::mat4(1), glm::vec3(0));
 	glBufferData(GL_ARRAY_BUFFER, sizeof(DecalDraw), &decalGPU, GL_DYNAMIC_DRAW);
 	u64 offset = 0;
 	//glm::vec3
@@ -126,6 +96,11 @@ void CardManager::initVertexData() {
 	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(DecalDraw), (void*)offset);
 	glEnableVertexAttribArray(6);
 	offset += sizeof(glm::vec4);
+
+	glVertexAttribIPointer(7, 1, GL_INT, sizeof(DecalDraw), (void*)offset);
+	glEnableVertexAttribArray(7);
+	offset += sizeof(int);
+
 	//glm::vec2 suitCoords[4];
 	//glm::vec2 faceCoords[4];
 	//if (!cardGetTexCoord(Card(Diamonds, King), faceCoords, suitCoords)) {
@@ -163,7 +138,23 @@ void CardManager::initVertexData() {
 }
 
 void CardManager::tick(u64 currentTime, u64 deltaTime) {
-
+	int amountCards = cardDraws.size();
+	if (amountCards > 0) {
+		glBindBuffer(GL_ARRAY_BUFFER, decalVBO);
+		DecalDraw* inGPU = (DecalDraw*)glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE);
+		for (int i = 0; i < amountCards; i++) {
+			//if (!cardDraws[i].moveComponent.isMoving(currentTime))
+				//continue;
+			int gpuOffset = i * 2;
+			glm::vec3 cardLocation = cardDraws[i].moveComponent.getLocation(currentTime);
+			glm::mat4 cardModel = glm::translate(glm::mat4(1), cardLocation);
+			DecalDraw* face = &inGPU[gpuOffset];
+			DecalDraw* suit = &inGPU[gpuOffset + 1];
+			face->model = cardModel;
+			suit->model = cardModel;
+		}
+		glUnmapBuffer(GL_ARRAY_BUFFER);
+	}
 }
 
 void CardManager::draw(float* projection, float* view, u64 currentTime) {
@@ -197,6 +188,14 @@ void CardManager::draw(float* projection, float* view, u64 currentTime) {
 	//	//glUniformMatrix4fv(decalModelLocation, 1, GL_FALSE, &topLeftFaceDecal[0][0]);
 	//	//glDrawArrays(GL_TRIANGLES, 0, 6);
 	//}
+
+	decalShader.use();
+	glUniformMatrix4fv(decalProjectionLocation, 1, GL_FALSE, projection);
+	glUniformMatrix4fv(decalViewLocation, 1, GL_FALSE, view);
+	glBindVertexArray(decalVAO);
+	glDrawArrays(GL_POINTS, 0, cardDraws.size() * 2);
+
+
 	cardShader.use();
 	glUniformMatrix4fv(cardProjectionLocation, 1, GL_FALSE, projection);
 	glUniformMatrix4fv(cardViewLocation, 1, GL_FALSE, view);
@@ -227,12 +226,45 @@ void CardManager::draw(float* projection, float* view, u64 currentTime) {
 	//glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-u64 CardManager::addCard(Card c, double speed) {
+u64 CardManager::addCard(u64 currentTime, Card c, double speed) {
 	CardDraw toAdd;
 	toAdd.c = c;
 	toAdd.moveComponent.movementSpeed = speed;
 	cardDraws.push_back(toAdd);
-	return cardDraws.size() - 1;
+	int amountCards = cardDraws.size();
+	glBindBuffer(GL_ARRAY_BUFFER, decalVBO);
+	DecalDraw* toGPU = new DecalDraw[amountCards * 2];
+	for (int i = 0; i < amountCards; i++) {
+		int gpuOffset = i * 2;
+		glm::vec3 cardLocation = cardDraws[i].moveComponent.getLocation(currentTime);
+		glm::vec2 suitCoords[4];
+		glm::vec2 faceCoords[4];
+		cardGetTexCoord(cardDraws[i].c, faceCoords, suitCoords);
+		//First is the Face which is top left
+		DecalDraw* face = &toGPU[gpuOffset];
+		face->decalOffset = glm::vec3(-1.75, 4.75, 0);
+		face->model = glm::translate(glm::mat4(1), cardLocation);
+		face->textureTopLeft = faceCoords[0];
+		face->textureSize = faceCoords[2] - faceCoords[0];
+		//Second is the Suit which is top left but under the face
+		DecalDraw* suit = &toGPU[gpuOffset + 1];
+		suit->decalOffset = glm::vec3(-1.75, 2.5, 0);
+		suit->model = glm::translate(glm::mat4(1), cardLocation);
+		suit->textureTopLeft = suitCoords[0];
+		suit->textureSize = suitCoords[2] - suitCoords[0];
+
+		if (cardDraws[i].c.suit == Hearts || cardDraws[i].c.suit == Diamonds) {
+			face->isRedSuit = 1;
+			suit->isRedSuit = 1;
+		}
+		else {
+			face->isRedSuit = 0;
+			suit->isRedSuit = 0;
+		}
+	}
+	glBufferData(GL_ARRAY_BUFFER, sizeof(DecalDraw) * amountCards * 2, toGPU, GL_DYNAMIC_DRAW);
+	delete[] toGPU;
+	return amountCards - 1;
 }
 
 bool CardManager::moveCard(u64 index, glm::vec3 destination, u64 currentTime) {

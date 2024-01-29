@@ -14,6 +14,8 @@ struct DecalDraw {
 	glm::vec2 textureSize;
 	//Card model
 	glm::mat4 model;
+	//Suit
+	int isRedSuit;
 };
 
 /*
@@ -152,9 +154,6 @@ class CardManager {
 	Texture decalTexture;
 
 	std::vector<CardDraw> cardDraws;
-
-	void changeCardTextureCoordsSuit(int suit);
-	void changeCardTextureCoordsFace(int face);
 public:
 	CardManager();
 	~CardManager();
@@ -163,7 +162,7 @@ public:
 	void tick(u64 currentTime, u64 deltaTime);
 	void draw(float* projection, float* view, u64 currentTime);
 
-	u64 addCard(Card c, double speed = 20);
+	u64 addCard(u64 currentTime, Card c, double speed = 20);
 	bool moveCard(u64 index, glm::vec3 destination, u64 currentTime);
 	void removeAllCards();
 };

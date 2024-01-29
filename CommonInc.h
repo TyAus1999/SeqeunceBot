@@ -36,6 +36,9 @@ struct MoveComponent {
 		arrivalTime = 0;
 		this->movementSpeed = movementSpeed;
 	}
+	bool isMoving(u64 currentTime) {
+		return !(currentTime > arrivalTime);
+	}
 	glm::vec3 getLocation(u64 currentTime) {
 		if (currentTime > arrivalTime)
 			return destination;

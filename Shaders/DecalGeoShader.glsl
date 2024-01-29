@@ -10,16 +10,22 @@ flat out vec2 fragTextureCoord;
 
 void main(){
     vec4 origin=gl_in[0].gl_Position;
-    float size=0.5;
+    float size=1;
+    //Top Left
     gl_Position=geoProjection[0]*(origin+vec4(-size,size,0,0));
-    //fragTextureCoord=geoTopLeftTexture[0];
+    fragTextureCoord=geoTopLeftTexture[0];
     EmitVertex();
+    //Bottom Left
     gl_Position=geoProjection[0]*(origin+vec4(-size,-size,0,0));
-    //fragTextureCoord=geoTopLeftTexture[0]+vec2(0,geoTextureSize[0].y);
+    fragTextureCoord=geoTopLeftTexture[0]+vec2(0,geoTextureSize[0].y);
     EmitVertex();
-    gl_Position=geoProjection[0]*(origin+vec4(size,-size,0,0));
-    //fragTextureCoord=geoTopLeftTexture[0]+
-    EmitVertex();
+    //Top Right
     gl_Position=geoProjection[0]*(origin+vec4(size,size,0,0));
+    fragTextureCoord=geoTopLeftTexture[0]+vec2(geoTextureSize[0].x,0);
+    EmitVertex();
+    //Bottom Right
+    gl_Position=geoProjection[0]*(origin+vec4(size,-size,0,0));
+    fragTextureCoord=geoTopLeftTexture[0]+geoTextureSize[0];
+    EmitVertex();
     EndPrimitive();
 }
