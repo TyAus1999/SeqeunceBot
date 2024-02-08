@@ -134,6 +134,12 @@ static bool cardGetTexCoord(Card c, glm::vec2* faceCoords, glm::vec2* suitCoords
 		faceCoords[2] = glm::vec2(0.0578125, 0.1277777777777778);
 		faceCoords[3] = glm::vec2(0.0578125, 0.1722222222222222);
 		break;
+	case 10:
+		faceCoords[0] = glm::vec2(0.0348958333333333, 0.1009259259259259);
+		faceCoords[1] = glm::vec2(0.0348958333333333, 0.0555555555555556);
+		faceCoords[2] = glm::vec2(0.0661458333333333, 0.0555555555555556);
+		faceCoords[3] = glm::vec2(0.0661458333333333, 0.1009259259259259);
+		break;
 	}
 	return true;
 }
