@@ -61,8 +61,8 @@ bool Engine::init() {
 	projection = playerCam->getProjection();
 
 	Board* b = game.getBoardRender();
-	for (int x = 0; x < 10; x++) {
-		for (int y = 0; y < 10; y++) {
+	for (int y = 10; y > 0; y--) {
+		for (int x = 10; x > 0; x--) {
 			Place* p = b->getPlace(x, y);
 			if (!p)
 				continue;
@@ -72,7 +72,7 @@ bool Engine::init() {
 			u64 c = cardManager.addCard(0, p->card);
 			float destX, destY;
 			destX = -38 + (x * 8);
-			destY = -38 + (y * 8);
+			destY = -50 + (y * 10);
 			cardManager.moveCard(c, glm::vec3(destX, destY, 0), time);
 		}
 	}
